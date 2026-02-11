@@ -1,0 +1,320 @@
+{% extends "base.html" %} {% block content %}
+
+<!-- Hero секция -->
+<section class="hero-section">
+  <div class="container">
+    <div
+      class="row d-flex justify-content-center align-items-center text-center"
+    >
+      <div class="col-lg-8">
+        <h1 class="hero-title">Всё о салонах красоты вашего города</h1>
+        <p class="lead mb-4">
+          Полная информация о салонах красоты, парикмахерских и спа-центрах
+          с реальными отзывами и рейтингами
+        </p>
+
+        <div class="stats-container">
+          <div class="row">
+            <div class="col-6 col-md-3">
+              <div class="stat-item">
+                <h3 class="stat-number">{{ stats.total_salons }}+</h3>
+                <p class="stat-label">Салонов</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-item">
+                <h3 class="stat-number">{{ stats.total_reviews }}+</h3>
+                <p class="stat-label">Отзывов</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-item">
+                <h3 class="stat-number">{{ stats.average_rating }}</h3>
+                <p class="stat-label">Средний рейтинг</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-item">
+                <h3 class="stat-number">{{ stats.total_categories }}</h3>
+                <p class="stat-label">Категорий услуг</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Лучшие салоны по рейтингу -->
+<section class="container mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="section-title mb-0">Топ салонов по рейтингу</h2>
+    <a href="/catalog?sort_by=rating" class="text-decoration-none"
+      >Все салоны <i class="bi bi-arrow-right"></i
+    ></a>
+  </div>
+
+  <div class="row g-4">
+    {% for salon in top_salons %}
+    <div class="col-md-4">
+      <div class="top-salon-card top-{{ loop.index }}">
+        <div class="top-badge">#{{ loop.index }}</div>
+        <div class="row g-0">
+          <div class="col-md-5">
+            <img src="{{ salon.image_url }}" class="top-salon-img" alt="{{ salon.name }}" />
+          </div>
+          <div class="col-md-7">
+            <div class="p-3">
+              <h5 class="mb-1">{{ salon.name }}</h5>
+              <p class="text-muted small mb-2">{{ salon.category }}</p>
+              <div class="d-flex align-items-center mb-2">
+                <div class="rating me-2">
+                  {% for i in range(5) %}
+                    {% if i < salon.rating|int %}
+                      <i class="bi bi-star-fill"></i>
+                    {% elif i < salon.rating %}
+                      <i class="bi bi-star-half"></i>
+                    {% else %}
+                      <i class="bi bi-star"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <span class="text-muted small">{{ "%.1f"|format(salon.rating) }} ({{ salon.reviews_count }} отзывов)</span>
+              </div>
+              <div class="salon-info">
+                <p class="small mb-1">
+                  <i class="bi bi-geo-alt me-1"></i>{{ salon.address }}
+                </p>
+                <p class="small mb-2">
+                  <i class="bi bi-clock me-1"></i>{{ salon.working_hours }}
+                </p>
+                <p class="small mb-0">
+                  <i class="bi bi-telephone me-1"></i>{{ salon.phone }}
+                </p>
+                {% if salon.is_verified %}
+                <p class="small text-success mb-0 mt-1">
+                  <i class="bi bi-check-circle-fill"></i> Проверенный салон
+                </p>
+                {% endif %}
+              </div>
+              <a href="/catalog/{{ salon.id }}" class="btn btn-sm btn-beauty mt-2 w-100">Подробнее</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Категории -->
+<section class="container mb-5">
+  <h2 class="section-title">Категории услуг</h2>
+  <div class="row g-4">
+    {% for category in categories %}
+    <div class="col-md-3 col-sm-6">
+      <a href="/catalog?category={{ category.name }}" class="text-decoration-none text-dark">
+        <div class="category-card text-center p-4 shadow-sm">
+          <div class="category-icon">
+            {% if category.name == "Парикмахерская" %}
+              <i class="bi bi-scissors"></i>
+            {% elif category.name == "Ногтевой сервис" %}
+              <i class="bi bi-brush"></i>
+            {% elif category.name == "Косметология" %}
+              <i class="bi bi-droplet"></i>
+            {% elif category.name == "SPA-салон" %}
+              <i class="bi bi-flower1"></i>
+            {% elif category.name == "Брови и ресницы" %}
+              <i class="bi bi-eyeglasses"></i>
+            {% elif category.name == "Тату и пирсинг" %}
+              <i class="bi bi-diamond"></i>
+            {% elif category.name == "Мужской барбершоп" %}
+              <i class="bi bi-gender-male"></i>
+            {% elif category.name == "Солярий" %}
+              <i class="bi bi-rainbow"></i>
+            {% elif category.name == "Массажный салон" %}
+              <i class="bi bi-hand-index"></i>
+            {% elif category.name == "Эпиляция и депиляция" %}
+              <i class="bi bi-droplet-half"></i>
+            {% elif category.name == "Свадебный салон" %}
+              <i class="bi bi-heart"></i>
+            {% elif category.name == "Детская парикмахерская" %}
+              <i class="bi bi-balloon"></i>
+            {% elif category.name == "Салон красоты полного цикла" %}
+              <i class="bi bi-stars"></i>
+            {% else %}
+              <i class="bi bi-shop"></i>
+            {% endif %}
+          </div>
+          <h5>{{ category.name }}</h5>
+          <p class="text-muted">
+            {% if category.name == "Парикмахерская" %}
+              Стрижки, укладки, окрашивание
+            {% elif category.name == "Ногтевой сервис" %}
+              Маникюр, педикюр, наращивание
+            {% elif category.name == "Косметология" %}
+              Уходовые процедуры, чистки
+            {% elif category.name == "SPA-салон" %}
+              Релакс, уход за телом
+            {% elif category.name == "Брови и ресницы" %}
+              Ламинирование, окрашивание
+            {% elif category.name == "Тату и пирсинг" %}
+              Студии татуировки и пирсинга
+            {% elif category.name == "Мужской барбершоп" %}
+              Барбершопы и мужской уход
+            {% elif category.name == "Солярий" %}
+              Студии загара
+            {% elif category.name == "Массажный салон" %}
+              Лечебный и расслабляющий массаж
+            {% elif category.name == "Эпиляция и депиляция" %}
+              Шугаринг, воск, лазер
+            {% elif category.name == "Свадебный салон" %}
+              Свадебные прически и макияж
+            {% elif category.name == "Детская парикмахерская" %}
+              Стрижки и укладки для детей
+            {% elif category.name == "Салон красоты полного цикла" %}
+              Полный спектр услуг
+            {% else %}
+              Различные услуги красоты
+            {% endif %}
+          </p>
+          <span class="badge bg-light text-dark">{{ category.count }} салонов</span>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Последние отзывы -->
+<section class="container mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="section-title mb-0">Последние отзывы</h2>
+    <a href="#" class="text-decoration-none"
+      >Все салоны<i class="bi bi-arrow-right"></i
+    ></a>
+  </div>
+
+  <div class="row g-4">
+    {% for review in recent_reviews %}
+    <div class="col-md-6">
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-author">
+            <div class="review-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ review.author_name }}</h6>
+              <small class="text-muted">
+                {% set days_ago = (now - review.created_at).days %}
+                {% if days_ago == 0 %}
+                  сегодня
+                {% elif days_ago == 1 %}
+                  вчера
+                {% elif days_ago < 7 %}
+                  {{ days_ago }} дня назад
+                {% elif days_ago < 30 %}
+                  {{ (days_ago / 7)|int }} недели назад
+                {% else %}
+                  {{ (days_ago / 30)|int }} месяцев назад
+                {% endif %}
+              </small>
+            </div>
+          </div>
+          <div class="rating">
+            {% for i in range(5) %}
+              {% if i < review.rating %}
+                <i class="bi bi-star-fill"></i>
+              {% else %}
+                <i class="bi bi-star"></i>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="review-body">
+          <h6>{{ review.salon.name }}</h6>
+          <p class="mb-2">{{ review.text }}</p>
+          {% if review.tags %}
+          <div class="review-tags">
+            {% for tag in review.tags.split(', ') %}
+              <span class="badge bg-light text-dark">{{ tag }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Полезные статьи -->
+<section class="bg-light py-5 mb-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title mb-0">Полезные статьи</h2>
+      <a href="/blog" class="text-decoration-none"
+        >Все статьи <i class="bi bi-arrow-right"></i
+      ></a>
+    </div>
+
+    <div class="row g-4">
+      {% for post in blog_posts %}
+      <div class="col-md-4">
+        <a href="/blog/{{ post.slug }}" class="text-decoration-none text-dark">
+          <div class="article-card">
+            <img src="{{ post.image_url }}" class="article-img" alt="{{ post.title }}" />
+            <div class="article-content">
+              <span class="article-category">{{ post.category }}</span>
+              <h5 class="article-title">{{ post.title }}</h5>
+              <p class="article-excerpt">
+                {{ post.excerpt[:80] }}...
+              </p>
+              <div class="article-meta">
+                <small class="text-muted">
+                  <i class="bi bi-calendar me-1"></i> {{ post.created_at.strftime('%d.%m.%Y') }}
+                </small>
+                <small class="text-muted ms-3">
+                  <i class="bi bi-eye me-1"></i> {{ post.views_count }}
+                </small>
+                {% if post.tags %}
+                <div class="mt-2">
+                  {% for tag in post.tags[:2] %}
+                    <span class="badge bg-light text-dark me-1">{{ tag.name }}</span>
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Районы города -->
+<section class="container mb-5">
+  <h2 class="section-title">Салоны по районам</h2>
+  <div class="row g-3">
+    {% for district in districts %}
+    <div class="col-md-6 col-sm-6">
+      <a href="/catalog?district={{ district.name }}" class="text-decoration-none text-dark">
+        <div class="district-card">
+          <h6>{{ district.name }} район</h6>
+          <p class="text-muted small mb-1">{{ district.count }} салонов</p>
+          <div class="progress" style="height: 8px">
+            {% set percentage = (district.count / max_district_count * 100)|int %}
+            <div class="progress-bar" style="width: {{ percentage }}%"></div>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

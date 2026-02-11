@@ -1,0 +1,438 @@
+{% extends "base.html" %} {% block content %}
+<!-- Контент страницы контактов -->
+<div class="container mt-5 pt-4">
+  <!-- Хлебные крошки -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Главная</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Контакты и информация
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Заголовок -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h1 class="page-title">Контакты и информация</h1>
+      <p class="lead-contact">
+        Вся необходимая информация о проекте Красота в Гродно
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Основной контент -->
+    <div class="col-lg-8">
+      <!-- Контактная информация -->
+      <div class="contact-card mb-5">
+        <h2 class="section-title">Контактная информация</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="contact-item mb-4">
+              <div class="contact-icon">
+                <i class="bi bi-envelope"></i>
+              </div>
+              <div>
+                <h5>Email</h5>
+                <p>info@beauty-city.ru</p>
+                <p class="small text-muted">
+                  Для общих вопросов и сотрудничества
+                </p>
+              </div>
+            </div>
+
+            <div class="contact-item mb-4">
+              <div class="contact-icon">
+                <i class="bi bi-telephone"></i>
+              </div>
+              <div>
+                <h5>Телефон</h5>
+                <p>+7 (XXX) XXX-XX-XX</p>
+                <p class="small text-muted">Пн-Пт: 9:00-18:00</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="contact-item mb-4">
+              <div class="contact-icon">
+                <i class="bi bi-geo-alt"></i>
+              </div>
+              <div>
+                <h5>Адрес</h5>
+                <p>г. Ваш Город, ул. Примерная, 123</p>
+                <p class="small text-muted">Центральный офис</p>
+              </div>
+            </div>
+
+            <div class="contact-item mb-4">
+              <div class="contact-icon">
+                <i class="bi bi-clock"></i>
+              </div>
+              <div>
+                <h5>Режим работы</h5>
+                <p>Понедельник - Пятница: 9:00-18:00</p>
+                <p>Суббота - Воскресенье: выходной</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- О проекте -->
+      <div class="info-card mb-5" id="about">
+        <h2 class="section-title">О проекте</h2>
+        <div class="about-content">
+          <p>
+            Красота в Гродно — это информационный ресурс, созданный для помощи жителям
+            города в поиске лучших салонов красоты, парикмахерских и
+            СПА-центров.
+          </p>
+
+          <h5>Наша миссия</h5>
+          <p>
+            Предоставлять актуальную и достоверную информацию о салонах красоты,
+            помогать пользователям делать осознанный выбор на основе реальных
+            отзывов и рейтингов.
+          </p>
+
+          <h5>Что мы предлагаем</h5>
+          <ul>
+            <li>Полный каталог салонов красоты вашего города</li>
+            <li>Реальные отзывы от посетителей</li>
+            <li>Рейтинги и оценки по различным критериям</li>
+            <li>Актуальную информацию об услугах и ценах</li>
+            <li>Полезные статьи и советы по уходу</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Правила сайта -->
+      <div class="info-card mb-5" id="rules">
+        <h2 class="section-title">Правила сайта</h2>
+        <div class="about-content">
+          <h5>Основные правила использования</h5>
+          <ul>
+            <li>Запрещено размещение оскорбительных или нецензурных комментариев</li>
+            <li>Отзывы должны быть основаны на реальном опыте посещения</li>
+            <li>Запрещена реклама сторонних услуг без согласования</li>
+            <li>Запрещено копирование контента сайта без разрешения</li>
+            <li>Пользователь несет ответственность за достоверность предоставленной информации</li>
+          </ul>
+          
+          <h5>Модерация контента</h5>
+          <p>
+            Администрация оставляет за собой право удалять отзывы и комментарии, 
+            нарушающие правила сайта, без предварительного уведомления.
+          </p>
+        </div>
+      </div>
+
+      <!-- Политика конфиденциальности -->
+      <div class="info-card mb-5" id="privacy">
+        <h2 class="section-title">Политика конфиденциальности</h2>
+        <div class="about-content">
+          <p>
+            Мы ценим вашу конфиденциальность и обеспечиваем защиту персональных данных.
+          </p>
+          
+          <h5>Какие данные мы собираем</h5>
+          <ul>
+            <li>Имя и контактные данные при отправке форм</li>
+            <li>Информацию о посещении сайта (cookies)</li>
+            <li>Данные для регистрации аккаунта (если предусмотрено)</li>
+          </ul>
+          
+          <h5>Использование данных</h5>
+          <p>
+            Собранные данные используются для улучшения работы сайта, 
+            предоставления услуг и связи с пользователями. Мы не передаем 
+            ваши данные третьим лицам без вашего согласия.
+          </p>
+        </div>
+      </div>
+
+      <!-- Для салонов -->
+      <div class="info-card mb-5" id="for-salons">
+        <h2 class="section-title">Для салонов красоты</h2>
+        <div class="about-content">
+          <p>
+            Хотите добавить свой салон в наш каталог или управлять информацией о нем?
+          </p>
+          
+          <h5>Преимущества для салонов</h5>
+          <ul>
+            <li>Бесплатное размещение в каталоге</li>
+            <li>Управление информацией об услугах и ценах</li>
+            <li>Ответы на отзывы клиентов</li>
+            <li>Статистика просмотров вашей страницы</li>
+          </ul>
+          
+          <p>
+            Для добавления салона или получения доступа к управлению страницей 
+            свяжитесь с нами по email: <strong>partners@beauty-city.ru</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- Реклама на сайте -->
+      <div class="info-card mb-5" id="ads">
+        <h2 class="section-title">Реклама на сайте</h2>
+        <div class="about-content">
+          <p>
+            Предлагаем возможности для размещения рекламы на нашем ресурсе.
+          </p>
+          
+          <h5>Форматы рекламы</h5>
+          <ul>
+            <li>Баннерная реклама в различных разделах сайта</li>
+            <li>Спонсорство категорий или разделов</li>
+            <li>Партнерские материалы и статьи</li>
+            <li>Email-рассылки для нашей аудитории</li>
+          </ul>
+          
+          <p>
+            Для обсуждения условий рекламы и сотрудничества обращайтесь 
+            по email: <strong>ads@beauty-city.ru</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- Помощь -->
+      <div class="info-card mb-5" id="help">
+        <h2 class="section-title">Помощь</h2>
+        <div class="about-content">
+          <h5>Частые вопросы</h5>
+          <ul>
+            <li><strong>Как добавить отзыв?</strong> - Отзывы можно оставить на странице конкретного салона</li>
+            <li><strong>Как изменить свой отзыв?</strong> - Свяжитесь с поддержкой для редактирования отзыва</li>
+            <li><strong>Как сообщить об ошибке?</strong> - Используйте форму обратной связи ниже</li>
+            <li><strong>Как предложить новый салон?</strong> - Отправьте нам информацию через форму обратной связи</li>
+          </ul>
+          
+          <h5>Техническая поддержка</h5>
+          <p>
+            При возникновении технических проблем с работой сайта пишите на 
+            <strong>support@beauty-city.ru</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- Вопросы и ответы -->
+      <div class="info-card mb-5" id="faq">
+        <h2 class="section-title">Вопросы и ответы</h2>
+        <div class="about-content">
+          <div class="faq-item mb-3">
+            <h5>Насколько актуальна информация на сайте?</h5>
+            <p>
+              Мы регулярно обновляем информацию, но рекомендуем уточнять 
+              детали (цены, время работы) непосредственно у салонов.
+            </p>
+          </div>
+          
+          <div class="faq-item mb-3">
+            <h5>Можно ли доверять отзывам на сайте?</h5>
+            <p>
+              Мы стараемся проверять отзывы на достоверность, но рекомендуем 
+              рассматривать их как субъективное мнение посетителей.
+            </p>
+          </div>
+          
+          <div class="faq-item mb-3">
+            <h5>Платят ли салоны за размещение на сайте?</h5>
+            <p>
+              Базовое размещение в каталоге бесплатно для всех салонов. 
+              Платные услуги - только дополнительные возможности (реклама, 
+              выделение в каталоге и т.д.).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Поддержка -->
+      <div class="info-card mb-5" id="support">
+        <h2 class="section-title">Поддержка пользователей</h2>
+        <div class="about-content">
+          <p>
+            Наша служба поддержки готова помочь вам с любыми вопросами.
+          </p>
+          
+          <h5>Способы связи</h5>
+          <ul>
+            <li>Email: support@beauty-city.ru</li>
+            <li>Телефон: +7 (XXX) XXX-XX-XX (Пн-Пт, 9:00-18:00)</li>
+            <li>Форма обратной связи ниже</li>
+          </ul>
+          
+          <h5>Время ответа</h5>
+          <p>
+            Мы стремимся отвечать на все обращения в течение 24 часов 
+            в рабочие дни. На письма, полученные в выходные, ответим 
+            в понедельник.
+          </p>
+        </div>
+      </div>
+
+      <!-- Форма обратной связи -->
+      <div class="contact-form-card mb-5">
+        <h2 class="section-title">Обратная связь</h2>
+        <p class="mb-4">Есть вопросы или предложения? Напишите нам!</p>
+
+        <form>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  placeholder="Ваше имя"
+                />
+                <label for="name">Ваше имя</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  placeholder="Email"
+                />
+                <label for="email">Email</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="subject"
+              placeholder="Тема"
+            />
+            <label for="subject">Тема сообщения</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <textarea
+              class="form-control"
+              id="message"
+              placeholder="Сообщение"
+              style="height: 150px"
+            ></textarea>
+            <label for="message">Сообщение</label>
+          </div>
+
+          <button type="submit" class="btn btn-beauty">
+            <i class="bi bi-send me-2"></i> Отправить сообщение
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Сайдбар -->
+    <div class="col-lg-4">
+      <!-- Навигация по разделам -->
+      <div class="sidebar-nav mb-4">
+        <h5 class="sidebar-title">Разделы информации</h5>
+        <div class="nav-list">
+          <a href="#about" class="nav-item side-item active">
+            <i class="bi bi-info-circle me-2"></i> О проекте
+          </a>
+          <a href="#rules" class="nav-item side-item">
+            <i class="bi bi-journal-text me-2"></i> Правила сайта
+          </a>
+          <a href="#privacy" class="nav-item side-item">
+            <i class="bi bi-shield-check me-2"></i> Политика конфиденциальности
+          </a>
+          <a href="#for-salons" class="nav-item side-item">
+            <i class="bi bi-building me-2"></i> Для салонов
+          </a>
+          <a href="#ads" class="nav-item side-item">
+            <i class="bi bi-megaphone me-2"></i> Реклама на сайте
+          </a>
+          <a href="#help" class="nav-item side-item">
+            <i class="bi bi-question-circle me-2"></i> Помощь
+          </a>
+          <a href="#faq" class="nav-item side-item">
+            <i class="bi bi-chat-left-text me-2"></i> Вопросы и ответы
+          </a>
+          <a href="#support" class="nav-item side-item">
+            <i class="bi bi-headset me-2"></i> Поддержка
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Bootstrap JS -->
+
+
+<!-- Минимальный JS -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Обработка формы
+    document.querySelector("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      alert("Сообщение отправлено! Мы свяжемся с вами в ближайшее время.");
+      this.reset();
+    });
+
+    // Навигация по разделам
+    document.querySelectorAll(".side-item").forEach((item) => {
+      item.addEventListener("click", function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute("href");
+        
+        // Убираем активный класс у всех
+        document.querySelectorAll(".side-item").forEach((i) => {
+          i.classList.remove("active");
+        });
+
+        // Добавляем активный класс текущему
+        this.classList.add("active");
+
+        // Плавная прокрутка к разделу
+        if (targetId && targetId !== '#') {
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 100,
+              behavior: 'smooth'
+            });
+          }
+        }
+      });
+    });
+
+    // Автоматическое выделение активного раздела при прокрутке
+    const sections = document.querySelectorAll('.info-card, .contact-card, .contact-form-card');
+    const navItems = document.querySelectorAll('.side-item');
+    
+    function highlightActiveSection() {
+      let currentSection = '';
+      const scrollPosition = window.scrollY + 150;
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+          currentSection = '#' + section.id;
+        }
+      });
+      
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === currentSection) {
+          item.classList.add('active');
+        }
+      });
+    }
+    
+    window.addEventListener('scroll', highlightActiveSection);
+  });
+</script>
+{% endblock %}

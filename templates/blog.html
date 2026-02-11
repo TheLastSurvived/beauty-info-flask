@@ -1,0 +1,192 @@
+<!-- blog.html - обновленный шаблон -->
+{% extends "base.html" %} {% block content %}
+<!-- Контент страницы блога -->
+<div class="container mt-5 pt-4">
+  <!-- Хлебные крошки -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Главная</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Блог</li>
+    </ol>
+  </nav>
+
+  <!-- Заголовок -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="page-title">Блог о красоте и уходе</h1>
+      <p class="lead-contact">
+        Полезные статьи, советы и тренды из мира красоты
+      </p>
+      
+      <!-- Фильтры -->
+      {% if current_category or current_tag or search_query %}
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        Фильтры:
+        {% if current_category %}Категория: <strong>{{ current_category }}</strong>{% endif %}
+        {% if current_tag %}Тег: <strong>{{ current_tag }}</strong>{% endif %}
+        {% if search_query %}Поиск: <strong>{{ search_query }}</strong>{% endif %}
+        <a href="/blog" class="btn btn-sm btn-beauty ms-2">Сбросить фильтры</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Основной контент -->
+    <div class="col-lg-8">
+      <!-- Последние статьи -->
+      {% if posts %}
+      <div class="row mb-5">
+        {% for post in posts %}
+        <div class="col-md-6 mb-4">
+          <article class="blog-card">
+            <div class="blog-image">
+              {% if post.image_url %}
+              <img src="{{ post.image_url }}" alt="{{ post.title }}" />
+              {% else %}
+              <img src="/static/img/blog-default.jpg" alt="{{ post.title }}" />
+              {% endif %}
+              <span class="blog-category">{{ post.category }}</span>
+            </div>
+            <div class="blog-content">
+              <div class="blog-meta">
+                <span class="date"><i class="bi bi-calendar me-1"></i> {{ post.created_at.strftime('%d.%m.%Y') }}</span>
+                <span class="views"><i class="bi bi-eye me-1"></i> {{ post.views_count }}</span>
+                {% if post.author %}
+                <span class="author"><i class="bi bi-person me-1"></i> {{ post.author }}</span>
+                {% endif %}
+              </div>
+              <h3 class="blog-title">{{ post.title }}</h3>
+              <p class="blog-excerpt">{{ post.excerpt[:150] }}...</p>
+              <a href="/blog/{{ post.slug }}" class="read-more"
+                >Читать дальше <i class="bi bi-arrow-right"></i
+              ></a>
+            </div>
+          </article>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="alert alert-warning">
+        <i class="bi bi-info-circle me-2"></i>
+        По вашему запросу ничего не найдено.
+        <a href="/blog" class="alert-link">Показать все статьи</a>
+      </div>
+      {% endif %}
+
+      <!-- Пагинация -->
+      {% if total_pages > 1 %}
+      <nav aria-label="Навигация по страницам">
+        <ul class="pagination justify-content-center">
+          {% if current_page > 1 %}
+          <li class="page-item">
+            <a class="page-link" href="/blog?page={{ current_page - 1 }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_tag %}&tag={{ current_tag }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+          {% endif %}
+          
+          {% for page_num in range(1, total_pages + 1) %}
+            {% if page_num == current_page %}
+            <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="/blog?page={{ page_num }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_tag %}&tag={{ current_tag }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">{{ page_num }}</a></li>
+            {% endif %}
+          {% endfor %}
+          
+          {% if current_page < total_pages %}
+          <li class="page-item">
+            <a class="page-link" href="/blog?page={{ current_page + 1 }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_tag %}&tag={{ current_tag }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+
+    <!-- Сайдбар -->
+    <div class="col-lg-4">
+      <!-- Поиск по блогу -->
+      <div class="sidebar-card mb-4">
+        <h5 class="sidebar-title">Поиск по блогу</h5>
+        <div class="search-form">
+          <form action="/blog" method="get" class="d-flex">
+            <input
+              type="text"
+              class="form-control"
+              name="search"
+              placeholder="Поиск статей..."
+              value="{{ search_query if search_query else '' }}"
+            />
+            <button type="submit" class="btn btn-beauty ms-2">
+              <i class="bi bi-search"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Категории -->
+      <div class="sidebar-card mb-4">
+        <h5 class="sidebar-title">Категории</h5>
+        <div class="categories-list">
+          {% for cat in categories %}
+          <a href="/blog?category={{ cat.name }}" class="category-item {% if current_category == cat.name %}active{% endif %}">
+            <span>{{ cat.name }}</span>
+            <span class="count">{{ cat.count }}</span>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Популярные статьи -->
+      <div class="sidebar-card mb-4">
+        <h5 class="sidebar-title">Популярные статьи</h5>
+        <div class="popular-posts">
+          {% for post in popular_posts %}
+          <a href="/blog/{{ post.slug }}" class="popular-post">
+            <div class="popular-post-image">
+              {% if post.image_url %}
+              <img src="{{ post.image_url }}" alt="{{ post.title }}" />
+              {% else %}
+              <img src="/static/img/blog-default.jpg" alt="{{ post.title }}" />
+              {% endif %}
+            </div>
+            <div class="popular-post-content">
+              <h6>{{ post.title }}</h6>
+              <div class="meta">
+                <span class="date">{{ post.created_at.strftime('%d.%m.%Y') }}</span>
+                <span class="views">{{ post.views_count }} просмотров</span>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Теги -->
+      <div class="sidebar-card">
+        <h5 class="sidebar-title">Популярные теги</h5>
+        <div class="tags">
+          {% for tag in popular_tags %}
+          <a href="/blog?tag={{ tag.name }}" class="tag {% if current_tag == tag.name %}active{% endif %}">{{ tag.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

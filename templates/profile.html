@@ -1,0 +1,241 @@
+<!-- templates/profile.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+  <div class="row">
+    <!-- Боковая панель профиля -->
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <div class="avatar mb-3">
+            <i class="bi bi-person-circle display-1 text-beauty"></i>
+          </div>
+          <h4 class="card-title">{{ current_user.first_name or 'Пользователь' }} {{ current_user.last_name or '' }}</h4>
+          <p class="text-muted">{{ current_user.email }}</p>
+          {% if current_user.phone %}
+          <p><i class="bi bi-telephone me-2"></i>{{ current_user.phone }}</p>
+          {% endif %}
+          <p class="small text-muted">
+            <i class="bi bi-calendar me-1"></i>
+            Зарегистрирован: {{ current_user.created_at.strftime('%d.%m.%Y') }}
+          </p>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Статистика</h6>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Отзывы о салонах
+              <span class="badge bg-beauty rounded-pill">{{ current_user.reviews|length }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Комментарии в блоге
+              <span class="badge bg-beauty rounded-pill">{{ current_user.blog_comments|length }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Основное содержание профиля -->
+    <div class="col-md-8">
+      <!-- Форма редактирования профиля -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Редактирование профиля</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" action="/profile/update" class="needs-validation" novalidate>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="first_name" class="form-label">Имя</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" 
+                       value="{{ current_user.first_name or '' }}">
+              </div>
+              <div class="col-md-6">
+                <label for="last_name" class="form-label">Фамилия</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" 
+                       value="{{ current_user.last_name or '' }}">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" value="{{ current_user.email }}" readonly>
+              <div class="form-text">Email нельзя изменить</div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="phone" class="form-label">Телефон</label>
+              <input type="tel" class="form-control" id="phone" name="phone" 
+                     value="{{ current_user.phone or '' }}" placeholder="+375 (XX) XXX-XX-XX">
+            </div>
+            
+            <hr class="my-4">
+            
+            <h6 class="mb-3">Смена пароля</h6>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="current_password" class="form-label">Текущий пароль</label>
+                <input type="password" class="form-control" id="current_password" name="current_password">
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="new_password" class="form-label">Новый пароль</label>
+                <input type="password" class="form-control" id="new_password" name="new_password">
+              </div>
+              <div class="col-md-6">
+                <label for="confirm_password" class="form-label">Подтверждение пароля</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-beauty">
+              <i class="bi bi-check-circle me-2"></i>Сохранить изменения
+            </button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Мои отзывы -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-chat-left-text me-2"></i>Мои отзывы о салонах</h5>
+        </div>
+        <div class="card-body">
+          {% if user_reviews %}
+          <div class="list-group">
+            {% for review in user_reviews %}
+            <div class="list-group-item">
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">
+                  <a href="/catalog/{{ review.salon_id }}" class="text-decoration-none">
+                    {{ review.salon.name }}
+                  </a>
+                </h6>
+                <small class="text-muted">{{ review.created_at.strftime('%d.%m.%Y') }}</small>
+              </div>
+              <div class="rating mb-2">
+                {% for i in range(5) %}
+                  {% if i < review.rating %}
+                  <i class="bi bi-star-fill text-warning"></i>
+                  {% else %}
+                  <i class="bi bi-star text-secondary"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <p class="mb-2">{{ review.text|truncate(200) }}</p>
+              {% if review.tags %}
+              <div class="mb-2">
+                {% for tag in review.tags.split(',') %}
+                <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+              <form method="post" action="/review/{{ review.id }}/delete" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger" 
+                        onclick="return confirm('Удалить этот отзыв?')">
+                  <i class="bi bi-trash me-1"></i>Удалить
+                </button>
+              </form>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-muted text-center py-3">Вы еще не оставляли отзывов о салонах.</p>
+          <div class="text-center">
+            <a href="/catalog" class="btn btn-beauty">
+              <i class="bi bi-search me-2"></i>Найти салон для отзыва
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Мои комментарии в блоге -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-chat-quote me-2"></i>Мои комментарии в блоге</h5>
+        </div>
+        <div class="card-body">
+          {% if user_comments %}
+          <div class="list-group">
+            {% for comment in user_comments %}
+            <div class="list-group-item">
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">
+                  <a href="/blog/{{ comment.post.slug }}" class="text-decoration-none">
+                    {{ comment.post.title }}
+                  </a>
+                </h6>
+                <small class="text-muted">{{ comment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+              </div>
+              <p class="mb-2 mt-2">{{ comment.content|truncate(150) }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge {% if comment.is_approved %}bg-success{% else %}bg-warning{% endif %}">
+                  {% if comment.is_approved %}Опубликован{% else %}На модерации{% endif %}
+                </span>
+                <form method="post" action="/comment/{{ comment.id }}/delete" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" 
+                          onclick="return confirm('Удалить этот комментарий?')">
+                    <i class="bi bi-trash me-1"></i>Удалить
+                  </button>
+                </form>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-muted text-center py-3">Вы еще не оставляли комментариев в блоге.</p>
+          <div class="text-center">
+            <a href="/blog" class="btn btn-beauty">
+              <i class="bi bi-journal-text me-2"></i>Перейти в блог
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Валидация формы профиля
+    const form = document.querySelector('.needs-validation');
+    if (form) {
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    }
+    
+    // Ограничение на ввод телефона
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function(e) {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length > 12) value = value.substring(0, 12);
+        
+        let formatted = '';
+        if (value.length > 0) formatted = '+';
+        if (value.length > 0) formatted += value.substring(0, 3);
+        if (value.length > 3) formatted += ' (' + value.substring(3, 5);
+        if (value.length > 5) formatted += ') ' + value.substring(5, 8);
+        if (value.length > 8) formatted += '-' + value.substring(8, 10);
+        if (value.length > 10) formatted += '-' + value.substring(10, 12);
+        
+        this.value = formatted;
+      });
+    }
+  });
+</script>
+{% endblock %}
