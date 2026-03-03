@@ -282,6 +282,10 @@ h5 {
   color: #ffc107;
 }
 
+.rating-wrap {
+  font-size: 12px;
+}
+
 .btn-beauty {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
@@ -2038,4 +2042,66 @@ h5 {
   pointer-events: none;
   background-color: #fff;
   border-color: #dee2e6;
+}
+
+
+.error-section {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  padding-top: 120px !important;
+  padding-bottom: 60px !important;
+}
+
+.error-number {
+  font-size: 180px;
+  font-weight: 700;
+  line-height: 1;
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #e9c9b6 0%, #6f8c9f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 20px rgba(0,0,0,0.1);
+}
+
+.btn-outline-beauty {
+  color: #6f8c9f;
+  border-color: #6f8c9f;
+  background: transparent;
+}
+
+.btn-outline-beauty:hover {
+  color: #fff;
+  background-color: #6f8c9f;
+  border-color: #6f8c9f;
+}
+
+.feature-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+  height: 100%;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  background: white !important;
+}
+
+.feature-card:hover i {
+  transform: scale(1.1);
+}
+
+.feature-card i {
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .error-number {
+    font-size: 120px;
+  }
+  
+  .error-section {
+    padding-top: 100px !important;
+  }
 }

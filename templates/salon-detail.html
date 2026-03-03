@@ -28,11 +28,13 @@
             {% endfor %}
             <span class="ms-2">{{ "%.1f"|format(salon.rating) }} ({{ salon.reviews_count }} отзывов)</span>
           </div>
+          <!-- 
           {% if salon.is_verified %}
-          <span class="badge bg-success me-2">
+          <span class="badge me-2">
             <i class="bi bi-check-circle me-1"></i> Проверенный салон
           </span>
           {% endif %}
+          -->
         </div>
       </div>
       <div class="col-md-4">
@@ -135,7 +137,7 @@
               <div>
                 <strong class="service-price">
                   {% if service.price %}
-                    {{ service.price }} ₽
+                    {{ service.price }} BYN
                   {% else %}
                     По запросу
                   {% endif %}

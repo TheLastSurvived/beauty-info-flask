@@ -1,0 +1,96 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="error-section py-5">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-8">
+        <div class="error-content">
+          <div class="error-number mb-4">500</div>
+          <h1 class="display-4 mb-4">Внутренняя ошибка сервера</h1>
+          <p class="lead mb-5 text-muted">
+            Что-то пошло не так на нашей стороне. Мы уже работаем над исправлением проблемы.
+            Пожалуйста, попробуйте зайти на сайт через несколько минут.
+          </p>
+          
+          <div class="error-image mb-5">
+            <i class="bi bi-tools" style="font-size: 120px; color: #e9c9b6;"></i>
+          </div>
+          
+          <div class="error-actions">
+            <a href="/" class="btn btn-beauty btn-lg me-3 mb-3">
+              <i class="bi bi-house-door me-2"></i>На главную
+            </a>
+            <button onclick="location.reload()" class="btn btn-outline-beauty btn-lg mb-3">
+              <i class="bi bi-arrow-repeat me-2"></i>Обновить страницу
+            </button>
+          </div>
+          
+          <div class="error-search mt-5">
+            <p class="mb-3">Пока мы чиним, вы можете найти салон через поиск:</p>
+            <div class="row justify-content-center">
+              <div class="col-md-8">
+                <form action="/catalog/search" method="post" class="search-form">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control form-control-lg"
+                      name="search_query"
+                      placeholder="Поиск салонов..."
+                      required
+                    />
+                    <button class="btn btn-beauty" type="submit">
+                      <i class="bi bi-search"></i> Найти
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          
+          <div class="error-help mt-5 pt-3">
+            <h4 class="mb-4">Популярные разделы сайта</h4>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <a href="/catalog" class="text-decoration-none">
+                  <div class="feature-card p-4 bg-light rounded-3">
+                    <i class="bi bi-shop fs-1 mb-3" style="color: #6f8c9f;"></i>
+                    <h5>Каталог</h5>
+                    <p class="text-muted small mb-0">Все салоны города</p>
+                  </div>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="/blog" class="text-decoration-none">
+                  <div class="feature-card p-4 bg-light rounded-3">
+                    <i class="bi bi-journal-text fs-1 mb-3" style="color: #d4af37;"></i>
+                    <h5>Блог</h5>
+                    <p class="text-muted small mb-0">Полезные статьи</p>
+                  </div>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="/contact" class="text-decoration-none">
+                  <div class="feature-card p-4 bg-light rounded-3">
+                    <i class="bi bi-envelope fs-1 mb-3" style="color: #e9c9b6;"></i>
+                    <h5>Контакты</h5>
+                    <p class="text-muted small mb-0">Связь с нами</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="error-contact mt-5">
+            <div class="alert alert-warning" role="alert">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              Если ошибка повторяется, пожалуйста, 
+              <a href="/contact" class="alert-link">сообщите нам</a> об этом.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
