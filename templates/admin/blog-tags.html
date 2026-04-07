@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">Теги блога</h4>
+</div>
+
+<div class="admin-table">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Slug</th>
+                    <th>Используется в статьях</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tag in tags %}
+                <tr>
+                    <td>{{ tag.id }}</td>
+                    <td>{{ tag.name }}</td>
+                    <td>{{ tag.slug }}</td>
+                    <td>{{ tag.post_count }} шт.</td>
+                    <td>
+                        <form method="post" action="{{ url_for('admin.delete_blog_tag', id=tag.id) }}" class="d-inline delete-confirm">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if not tags %}
+<div class="text-center py-5">
+    <p class="text-muted">Теги пока не добавлены</p>
+</div>
+{% endif %}
+{% endblock %}

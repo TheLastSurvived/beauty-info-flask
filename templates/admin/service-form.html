@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">{{ title }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label>Салон *</label>
+                <select name="salon_id" class="form-select" required>
+                    <option value="">Выберите салон</option>
+                    {% for salon in salons %}
+                    <option value="{{ salon.id }}" {% if service and service.salon_id == salon.id %}selected{% endif %}>
+                        {{ salon.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label>Категория услуги</label>
+                <select name="category" class="form-select">
+                    <option value="">Выберите категорию</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat }}" {% if service and service.category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label>Название услуги *</label>
+                <input type="text" name="name" class="form-control" value="{{ service.name if service else '' }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label>Описание</label>
+                <textarea name="description" class="form-control" rows="3">{{ service.description if service else '' }}</textarea>
+            </div>
+            
+            <div class="mb-3">
+                <label>Цена (BYN)</label>
+                <input type="number" name="price" class="form-control" value="{{ service.price if service else '' }}">
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-beauty">Сохранить</button>
+                <a href="{{ url_for('admin.services') }}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | Админ-панель</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f5f5f0;
+        }
+        
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 100%);
+            color: #fff;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+        
+        .admin-sidebar .sidebar-header {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .admin-sidebar .sidebar-header h3 {
+            font-size: 1.3rem;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .admin-sidebar .sidebar-header h3 i {
+            margin-right: 10px;
+            color: #d4af37;
+        }
+        
+        .admin-sidebar .sidebar-header p {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        .admin-sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.8rem 1.5rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .admin-sidebar .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        
+        .admin-sidebar .nav-link.active {
+            background: #d4af37;
+            color: #2c1810;
+        }
+        
+        .admin-sidebar .nav-link i {
+            width: 22px;
+            font-size: 1.1rem;
+        }
+        
+        .admin-sidebar .nav-section {
+            padding: 1rem 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.5;
+        }
+        
+        /* Main Content */
+        .admin-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 20px;
+        }
+        
+        /* Top Bar */
+        .admin-topbar {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .admin-topbar .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .admin-topbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .admin-topbar .user-info .user-name {
+            font-weight: 500;
+        }
+        
+        .admin-topbar .user-info .btn-logout {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+        
+        .admin-topbar .user-info .btn-logout:hover {
+            background: #c0392b;
+        }
+        
+        /* Cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .stat-card .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: #fdf6e3;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #d4af37;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0 5px;
+        }
+        
+        .stat-card .stat-label {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        /* Tables */
+        .admin-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .admin-table table {
+            margin-bottom: 0;
+        }
+        
+        .admin-table th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            font-weight: 600;
+        }
+        
+        /* Buttons */
+        .btn-beauty {
+            background: #d4af37;
+            color: #2c1810;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-beauty:hover {
+            background: #c5a21a;
+            color: #2c1810;
+        }
+        
+        .btn-outline-beauty {
+            background: transparent;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            border-radius: 25px;
+            padding: 8px 20px;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline-beauty:hover {
+            background: #d4af37;
+            color: #2c1810;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            border: none;
+        }
+        
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+        }
+        
+        .search-bar input:focus {
+            border-color: #d4af37;
+        }
+        
+        /* Badges */
+        .badge-active {
+            background: #27ae60;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        
+        .badge-inactive {
+            background: #95a5a6;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        
+        .badge-admin {
+            background: #d4af37;
+            color: #2c1810;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                margin-left: -280px;
+            }
+            .admin-content {
+                margin-left: 0;
+            }
+        }
+        
+        /* Pagination */
+        .pagination {
+            margin-top: 1.5rem;
+        }
+        
+        .pagination .page-link {
+            color: #2c1810;
+        }
+        
+        .pagination .active .page-link {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: #2c1810;
+        }
+        
+        /* Alerts */
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Forms */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        }
+        
+        label {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <h3><i class="bi bi-scissors me-2"></i> Beauty Admin</h3>
+                <p>Красота в Гродно</p>
+                
+            </div>
+            
+            <div class="nav-section">ОСНОВНОЕ</div>
+            <a href="{{ url_for('admin.index') }}" class="nav-link {% if request.endpoint == 'admin.index' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i> <span>Дашборд</span>
+            </a>
+            
+            <div class="nav-section">САЛОНЫ</div>
+            <a href="{{ url_for('admin.salons') }}" class="nav-link {% if request.endpoint == 'admin.salons' %}active{% endif %}">
+                <i class="bi bi-shop"></i> <span>Салон красоты</span>
+            </a>
+            <a href="{{ url_for('admin.services') }}" class="nav-link {% if request.endpoint == 'admin.services' %}active{% endif %}">
+                <i class="bi bi-list-check"></i> <span>Услуги</span>
+            </a>
+            <a href="{{ url_for('admin.reviews') }}" class="nav-link {% if request.endpoint == 'admin.reviews' %}active{% endif %}">
+                <i class="bi bi-star"></i> <span>Отзывы</span>
+            </a>
+            
+            <div class="nav-section">ПОЛЬЗОВАТЕЛИ</div>
+            <a href="{{ url_for('admin.users') }}" class="nav-link {% if request.endpoint == 'admin.users' %}active{% endif %}">
+                <i class="bi bi-people"></i> <span>Пользователи</span>
+            </a>
+            
+            <div class="nav-section">БЛОГ</div>
+            <a href="{{ url_for('admin.blog_posts') }}" class="nav-link {% if request.endpoint == 'admin.blog_posts' %}active{% endif %}">
+                <i class="bi bi-journal-text"></i> <span>Статьи</span>
+            </a>
+            <a href="{{ url_for('admin.blog_comments') }}" class="nav-link {% if request.endpoint == 'admin.blog_comments' %}active{% endif %}">
+                <i class="bi bi-chat-dots"></i> <span>Комментарии</span>
+            </a>
+            <a href="{{ url_for('admin.blog_tags') }}" class="nav-link {% if request.endpoint == 'admin.blog_tags' %}active{% endif %}">
+                <i class="bi bi-tags"></i> <span>Теги</span>
+            </a>
+            
+            <div class="nav-section">НАВИГАЦИЯ</div>
+            <a href="{{ url_for('home') }}" class="nav-link" target="_blank">
+                <i class="bi bi-eye"></i> <span>Перейти на сайт</span>
+            </a>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-content">
+            <div class="admin-topbar">
+                <h2 class="page-title">{{ title }}</h2>
+                <div class="user-info">
+                    <span class="user-name">
+                        <i class="bi bi-person-circle"></i> 
+                        {{ current_user.first_name or current_user.email }}
+                    </span>
+                    <a href="{{ url_for('logout') }}" class="btn-logout">
+                        <i class="bi bi-box-arrow-right"></i> Выйти
+                    </a>
+                </div>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Подтверждение удаления
+        document.querySelectorAll('.delete-confirm').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!confirm('Вы уверены, что хотите удалить этот элемент? Действие необратимо.')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

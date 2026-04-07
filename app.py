@@ -7,11 +7,11 @@ from datetime import datetime
 from config import Config
 from flask_migrate import Migrate
 from models import db, User, Salon, Service, Review, BlogPost, BlogTag, BlogComment
-
+from admin import admin_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
-
+app.register_blueprint(admin_bp)
 # Инициализация расширений
 db.init_app(app)
 migrate = Migrate(app, db)

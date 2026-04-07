@@ -1,0 +1,76 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">{{ title }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label>Название салона *</label>
+                    <input type="text" name="name" class="form-control" value="{{ salon.name if salon else '' }}" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Категория *</label>
+                    <select name="category" class="form-select" required>
+                        <option value="">Выберите категорию</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if salon and salon.category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label>Описание</label>
+                <textarea name="description" class="form-control" rows="4">{{ salon.description if salon else '' }}</textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Адрес</label>
+                    <input type="text" name="address" class="form-control" value="{{ salon.address if salon else '' }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Район</label>
+                    <select name="district" class="form-select">
+                        <option value="">Выберите район</option>
+                        {% for dist in districts %}
+                        <option value="{{ dist }}" {% if salon and salon.district == dist %}selected{% endif %}>{{ dist }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Телефон</label>
+                    <input type="text" name="phone" class="form-control" value="{{ salon.phone if salon else '' }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Время работы</label>
+                    <input type="text" name="working_hours" class="form-control" value="{{ salon.working_hours if salon else '' }}" placeholder="Напр.: Пн-Пт: 9:00-20:00, Сб: 10:00-18:00">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label>URL изображения</label>
+                <input type="text" name="image_url" class="form-control" value="{{ salon.image_url if salon else '/static/img/default.png' }}">
+                <small class="text-muted">Оставьте пустым для использования изображения по умолчанию</small>
+            </div>
+            
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="is_verified" class="form-check-input" id="verified" {% if salon and salon.is_verified %}checked{% endif %}>
+                <label class="form-check-label" for="verified">Проверенный салон</label>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-beauty">Сохранить</button>
+                <a href="{{ url_for('admin.salons') }}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

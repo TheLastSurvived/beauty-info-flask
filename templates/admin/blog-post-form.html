@@ -1,0 +1,65 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">{{ title }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label>Заголовок *</label>
+                <input type="text" name="title" class="form-control" value="{{ post.title if post else '' }}" required>
+            </div>
+            
+            <div class="mb-3">
+                <label>Краткое описание (excerpt)</label>
+                <textarea name="excerpt" class="form-control" rows="3">{{ post.excerpt if post else '' }}</textarea>
+                <small class="text-muted">Краткое описание, которое будет отображаться в карточках и превью</small>
+            </div>
+            
+            <div class="mb-3">
+                <label>Содержание *</label>
+                <textarea name="content" class="form-control" rows="10" required>{{ post.content if post else '' }}</textarea>
+                <small class="text-muted">Поддерживается HTML разметка</small>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Автор</label>
+                    <input type="text" name="author" class="form-control" value="{{ post.author if post else 'Администратор' }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Категория</label>
+                    <select name="category" class="form-select">
+                        <option value="">Без категории</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if post and post.category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label>Теги (через запятую)</label>
+                <input type="text" name="tags" class="form-control" value="{{ current_tags if post else '' }}" placeholder="Напр.: красота, уход, советы">
+            </div>
+            
+            <div class="mb-3">
+                <label>URL изображения</label>
+                <input type="text" name="image_url" class="form-control" value="{{ post.image_url if post else '/static/img/blog-default.jpg' }}">
+            </div>
+            
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="is_published" class="form-check-input" id="published" {% if not post or post.is_published %}checked{% endif %}>
+                <label class="form-check-label" for="published">Опубликовать</label>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-beauty">Сохранить</button>
+                <a href="{{ url_for('admin.blog_posts') }}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
