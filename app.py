@@ -3,7 +3,6 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from sqlalchemy import func, or_, desc
 import math
 from datetime import datetime
-from image_utils import save_uploaded_file, delete_image
 from config import Config
 from flask_migrate import Migrate
 from models import db, User, Salon, Service, Review, BlogPost, BlogTag, BlogComment

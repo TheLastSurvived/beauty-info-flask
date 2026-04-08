@@ -4,7 +4,7 @@ from sqlalchemy import func, desc
 from functools import wraps
 from models import db, User, Salon, Service, Review, BlogPost, BlogTag, BlogComment
 from datetime import datetime
-from image_utils import save_uploaded_file, delete_image
+from image_utils import save_uploaded_image, delete_uploaded_image
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -73,11 +73,11 @@ def upload_salon_image():
         return jsonify({'error': 'Файл не выбран'}), 400
     
     # Сохраняем файл
-    image_url, thumbnail_url = save_uploaded_file(
-        file, 
-        subfolder='salons',
-        create_thumb=True,
-        thumbnail_size=(300, 200)
+    image_url, thumbnail_url = save_uploaded_image(
+    file, 
+    subfolder='salons',
+    make_thumb=True,
+    thumb_size=(300, 200)
     )
     
     if image_url:
@@ -103,7 +103,7 @@ def upload_blog_image():
         return jsonify({'error': 'Файл не выбран'}), 400
     
     # Сохраняем файл
-    image_url, thumbnail_url = save_uploaded_file(
+    image_url, thumbnail_url = save_uploaded_image(
         file, 
         subfolder='blog',
         create_thumb=True,
@@ -133,7 +133,7 @@ def upload_editor_image():
         return jsonify({'error': 'Файл не выбран'}), 400
     
     # Сохраняем файл
-    image_url, _ = save_uploaded_file(
+    image_url, _ = save_uploaded_image(
         file, 
         subfolder='editor',
         create_thumb=False
@@ -181,7 +181,7 @@ def add_salon():
         if 'image_file' in request.files:
             file = request.files['image_file']
             if file and file.filename:
-                uploaded_url, _ = save_uploaded_file(file, subfolder='salons', create_thumb=True)
+                uploaded_url, _ = save_uploaded_image(file, subfolder='salons', make_thumb=True)
                 if uploaded_url:
                     image_url = uploaded_url
         
@@ -228,9 +228,9 @@ def edit_salon(id):
             if file and file.filename:
                 # Удаляем старое изображение если оно не дефолтное
                 if salon.image_url and not salon.image_url.startswith('/static/img/default'):
-                    delete_image(salon.image_url)
+                    delete_uploaded_image(salon.image_url)
                 
-                uploaded_url, _ = save_uploaded_file(file, subfolder='salons', create_thumb=True)
+                uploaded_url, _ = save_uploaded_image(file, subfolder='salons', make_thumb=True)
                 if uploaded_url:
                     salon.image_url = uploaded_url
         
@@ -505,9 +505,10 @@ def add_blog_post():
         if 'image_file' in request.files:
             file = request.files['image_file']
             if file and file.filename:
-                uploaded_url, _ = save_uploaded_file(file, subfolder='blog', create_thumbnail=True)
+                uploaded_url, _ = save_uploaded_image(file, subfolder='blog', make_thumb=True)
                 if uploaded_url:
                     image_url = uploaded_url
+
         elif request.form.get('image_url'):
             image_url = request.form.get('image_url')
         
@@ -579,13 +580,15 @@ def edit_blog_post(id):
         if 'image_file' in request.files:
             file = request.files['image_file']
             if file and file.filename:
-                # Удаляем старое изображение 
+                # Удаляем старое изображение если оно не дефолтное
                 if post.image_url and not post.image_url.startswith('/static/img/blog-default'):
-                    delete_image(post.image_url)
+                    delete_uploaded_image(post.image_url)
                 
-                uploaded_url, _ = save_uploaded_file(file, subfolder='blog', create_thumbnail=True)
+                uploaded_url, _ = save_uploaded_image(file, subfolder='blog', make_thumb=True)
                 if uploaded_url:
                     post.image_url = uploaded_url
+
+
         elif request.form.get('image_url'):
             post.image_url = request.form.get('image_url')
         

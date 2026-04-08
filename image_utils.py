@@ -1,4 +1,4 @@
-# image_utils.py
+# image_utils.py - ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ВЕРСИЯ
 import os
 from PIL import Image
 from flask import current_app
@@ -19,7 +19,7 @@ def get_unique_filename(original_filename):
     name = name[:50]  # Ограничиваем длину
     return f"{name}_{unique_id}.{ext}"
 
-def make_thumbnail(image_path, thumbnail_path, size):
+def create_thumbnail_image(image_path, thumbnail_path, size):
     """Создание миниатюры изображения"""
     try:
         with Image.open(image_path) as img:
@@ -35,7 +35,7 @@ def make_thumbnail(image_path, thumbnail_path, size):
         current_app.logger.error(f"Ошибка создания миниатюры: {e}")
         return False
 
-def optimize_image(image_path, max_size=(1200, 1200), quality=85):
+def optimize_uploaded_image(image_path, max_size=(1200, 1200), quality=85):
     """Оптимизация изображения"""
     try:
         with Image.open(image_path) as img:
@@ -56,10 +56,16 @@ def optimize_image(image_path, max_size=(1200, 1200), quality=85):
         current_app.logger.error(f"Ошибка оптимизации изображения: {e}")
         return False
 
-def save_uploaded_file(file, subfolder='salons', create_thumb=True, thumbnail_size=(300, 200)):
+def save_uploaded_image(file, subfolder='salons', make_thumb=True, thumb_size=(300, 200)):
     """
     Сохранение загруженного файла
     Возвращает путь к файлу и путь к миниатюре (если создана)
+    
+    Параметры:
+    - file: загруженный файл
+    - subfolder: подпапка для сохранения ('salons', 'blog', 'editor')
+    - make_thumb: создавать ли миниатюру
+    - thumb_size: размер миниатюры
     """
     if not file or not allowed_file(file.filename):
         return None, None
@@ -76,17 +82,17 @@ def save_uploaded_file(file, subfolder='salons', create_thumb=True, thumbnail_si
     file.save(filepath)
     
     # Оптимизируем изображение
-    optimize_image(filepath, 
+    optimize_uploaded_image(filepath, 
                    max_size=(current_app.config['IMAGE_MAX_WIDTH'], 
                             current_app.config['IMAGE_MAX_HEIGHT']),
                    quality=current_app.config['IMAGE_QUALITY'])
     
     # Создаем миниатюру если нужно
     thumbnail_path = None
-    if create_thumb:
+    if make_thumb:
         thumb_filename = f"thumb_{filename}"
         thumb_filepath = os.path.join(upload_folder, thumb_filename)
-        if make_thumbnail(filepath, thumb_filepath, thumbnail_size):
+        if create_thumbnail_image(filepath, thumb_filepath, thumb_size):
             thumbnail_path = f"/{current_app.config['UPLOAD_FOLDER']}/{subfolder}/{thumb_filename}"
     
     # Возвращаем URL для доступа
@@ -94,7 +100,7 @@ def save_uploaded_file(file, subfolder='salons', create_thumb=True, thumbnail_si
     
     return file_url, thumbnail_path
 
-def delete_image(image_url):
+def delete_uploaded_image(image_url):
     """Удаление изображения и его миниатюры"""
     if not image_url or not image_url.startswith('/static/uploads/'):
         return False

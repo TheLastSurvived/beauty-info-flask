@@ -123,8 +123,27 @@ async function insertImageToEditor() {
         return;
     }
     
+    // Проверка размера файла (максимум 16MB)
+    if (file.size > 16 * 1024 * 1024) {
+        alert('Файл слишком большой. Максимальный размер 16MB');
+        return;
+    }
+    
+    // Проверка типа файла
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('Неподдерживаемый формат файла. Используйте JPG, PNG, GIF или WEBP');
+        return;
+    }
+    
     const formData = new FormData();
     formData.append('file', file);
+    
+    // Показываем индикатор загрузки
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Загрузка...';
+    button.disabled = true;
     
     try {
         const response = await fetch('/admin/upload/editor-image', {
@@ -147,11 +166,14 @@ async function insertImageToEditor() {
             alert('Изображение успешно вставлено!');
             fileInput.value = '';
         } else {
-            alert('Ошибка при загрузке изображения');
+            alert(result.error || 'Ошибка при загрузке изображения');
         }
     } catch (error) {
         console.error('Ошибка:', error);
-        alert('Произошла ошибка при загрузке');
+        alert('Произошла ошибка при загрузке. Попробуйте еще раз.');
+    } finally {
+        button.innerHTML = originalText;
+        button.disabled = false;
     }
 }
 </script>
