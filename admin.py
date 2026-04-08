@@ -1,10 +1,10 @@
-# admin.py
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app, jsonify
 from flask_login import login_required, current_user
 from sqlalchemy import func, desc
 from functools import wraps
 from models import db, User, Salon, Service, Review, BlogPost, BlogTag, BlogComment
 from datetime import datetime
+from image_utils import save_uploaded_file, delete_image
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -58,6 +58,96 @@ def index():
         avg_salon_rating=round(avg_salon_rating, 1)
     )
 
+# ==================== ЗАГРУЗКА ИЗОБРАЖЕНИЙ ====================
+
+@admin_bp.route('/upload/salon-image', methods=['POST'])
+@login_required
+@admin_required
+def upload_salon_image():
+    """AJAX загрузка изображения для салона"""
+    if 'image' not in request.files:
+        return jsonify({'error': 'Файл не выбран'}), 400
+    
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'error': 'Файл не выбран'}), 400
+    
+    # Сохраняем файл
+    image_url, thumbnail_url = save_uploaded_file(
+        file, 
+        subfolder='salons',
+        create_thumb=True,
+        thumbnail_size=(300, 200)
+    )
+    
+    if image_url:
+        return jsonify({
+            'success': True,
+            'image_url': image_url,
+            'thumbnail_url': thumbnail_url
+        })
+    else:
+        return jsonify({'error': 'Неподдерживаемый формат файла'}), 400
+
+# AJAX загрузка изображения для блога
+@admin_bp.route('/upload/blog-image', methods=['POST'])
+@login_required
+@admin_required
+def upload_blog_image():
+    """AJAX загрузка изображения для блога"""
+    if 'image' not in request.files:
+        return jsonify({'error': 'Файл не выбран'}), 400
+    
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'error': 'Файл не выбран'}), 400
+    
+    # Сохраняем файл
+    image_url, thumbnail_url = save_uploaded_file(
+        file, 
+        subfolder='blog',
+        create_thumb=True,
+        thumbnail_size=(400, 300)
+    )
+    
+    if image_url:
+        return jsonify({
+            'success': True,
+            'image_url': image_url,
+            'thumbnail_url': thumbnail_url
+        })
+    else:
+        return jsonify({'error': 'Неподдерживаемый формат файла'}), 400
+
+# Загрузка изображения для редактора
+@admin_bp.route('/upload/editor-image', methods=['POST'])
+@login_required
+@admin_required
+def upload_editor_image():
+    """Загрузка изображения для редактора контента (TinyMCE/Summernote)"""
+    if 'file' not in request.files:
+        return jsonify({'error': 'Файл не выбран'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'Файл не выбран'}), 400
+    
+    # Сохраняем файл
+    image_url, _ = save_uploaded_file(
+        file, 
+        subfolder='editor',
+        create_thumb=False
+    )
+    
+    if image_url:
+        return jsonify({
+            'location': image_url
+        })
+    else:
+        return jsonify({'error': 'Неподдерживаемый формат файла'}), 400
+
+
+
 # ==================== УПРАВЛЕНИЕ САЛОНАМИ ====================
 
 @admin_bp.route('/salons')
@@ -86,6 +176,15 @@ def salons():
 @admin_required
 def add_salon():
     if request.method == 'POST':
+        # Обработка загруженного изображения
+        image_url = '/static/img/default.png'
+        if 'image_file' in request.files:
+            file = request.files['image_file']
+            if file and file.filename:
+                uploaded_url, _ = save_uploaded_file(file, subfolder='salons', create_thumb=True)
+                if uploaded_url:
+                    image_url = uploaded_url
+        
         salon = Salon(
             name=request.form.get('name'),
             category=request.form.get('category'),
@@ -94,7 +193,7 @@ def add_salon():
             district=request.form.get('district'),
             phone=request.form.get('phone'),
             working_hours=request.form.get('working_hours'),
-            image_url=request.form.get('image_url', '/static/img/default.png'),
+            image_url=image_url,
             is_verified='is_verified' in request.form
         )
         
@@ -123,6 +222,18 @@ def edit_salon(id):
     salon = Salon.query.get_or_404(id)
     
     if request.method == 'POST':
+        # Обработка загруженного изображения
+        if 'image_file' in request.files:
+            file = request.files['image_file']
+            if file and file.filename:
+                # Удаляем старое изображение если оно не дефолтное
+                if salon.image_url and not salon.image_url.startswith('/static/img/default'):
+                    delete_image(salon.image_url)
+                
+                uploaded_url, _ = save_uploaded_file(file, subfolder='salons', create_thumb=True)
+                if uploaded_url:
+                    salon.image_url = uploaded_url
+        
         salon.name = request.form.get('name')
         salon.category = request.form.get('category')
         salon.description = request.form.get('description')
@@ -130,7 +241,6 @@ def edit_salon(id):
         salon.district = request.form.get('district')
         salon.phone = request.form.get('phone')
         salon.working_hours = request.form.get('working_hours')
-        salon.image_url = request.form.get('image_url')
         salon.is_verified = 'is_verified' in request.form
         
         db.session.commit()
@@ -381,16 +491,25 @@ def blog_posts():
 @admin_required
 def add_blog_post():
     if request.method == 'POST':
-        # Генерируем slug из названия
         import re
         slug = request.form.get('title')
         slug = re.sub(r'[^\w\s-]', '', slug.lower())
         slug = re.sub(r'[-\s]+', '-', slug)
         
-        # Проверяем уникальность slug
         existing = BlogPost.query.filter_by(slug=slug).first()
         if existing:
             slug = f"{slug}-{datetime.now().timestamp()}"
+        
+        # Обработка загруженного изображения
+        image_url = '/static/img/blog-default.jpg'
+        if 'image_file' in request.files:
+            file = request.files['image_file']
+            if file and file.filename:
+                uploaded_url, _ = save_uploaded_file(file, subfolder='blog', create_thumbnail=True)
+                if uploaded_url:
+                    image_url = uploaded_url
+        elif request.form.get('image_url'):
+            image_url = request.form.get('image_url')
         
         post = BlogPost(
             title=request.form.get('title'),
@@ -399,7 +518,7 @@ def add_blog_post():
             content=request.form.get('content'),
             author=request.form.get('author', 'Администратор'),
             category=request.form.get('category'),
-            image_url=request.form.get('image_url', '/static/img/blog-default.jpg'),
+            image_url=image_url,
             is_published='is_published' in request.form
         )
         
@@ -433,6 +552,20 @@ def add_blog_post():
         categories=categories
     )
 
+
+@admin_bp.route('/delete-image', methods=['POST'])
+@login_required
+@admin_required
+def delete_image_route():
+    """Удаление изображения"""
+    data = request.get_json()
+    image_url = data.get('image_url')
+    
+    if image_url and delete_image(image_url):
+        return jsonify({'success': True})
+    return jsonify({'success': False, 'error': 'Не удалось удалить изображение'}), 400
+
+
 @admin_bp.route('/blog/posts/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -440,17 +573,31 @@ def edit_blog_post(id):
     post = BlogPost.query.get_or_404(id)
     
     if request.method == 'POST':
+        import re
+        
+        # Обработка загруженного изображения
+        if 'image_file' in request.files:
+            file = request.files['image_file']
+            if file and file.filename:
+                # Удаляем старое изображение 
+                if post.image_url and not post.image_url.startswith('/static/img/blog-default'):
+                    delete_image(post.image_url)
+                
+                uploaded_url, _ = save_uploaded_file(file, subfolder='blog', create_thumbnail=True)
+                if uploaded_url:
+                    post.image_url = uploaded_url
+        elif request.form.get('image_url'):
+            post.image_url = request.form.get('image_url')
+        
         post.title = request.form.get('title')
         post.excerpt = request.form.get('excerpt')
         post.content = request.form.get('content')
         post.author = request.form.get('author', 'Администратор')
         post.category = request.form.get('category')
-        post.image_url = request.form.get('image_url')
         post.is_published = 'is_published' in request.form
         post.updated_at = datetime.now()
         
         # Обновляем теги
-        import re
         post.tags.clear()
         tags_str = request.form.get('tags', '')
         if tags_str:

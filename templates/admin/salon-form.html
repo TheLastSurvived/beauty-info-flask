@@ -6,64 +6,91 @@
         <h4 class="mb-0">{{ title }}</h4>
     </div>
     <div class="card-body">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <div class="row">
-                <div class="col-md-8 mb-3">
-                    <label>Название салона *</label>
-                    <input type="text" name="name" class="form-control" value="{{ salon.name if salon else '' }}" required>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Название салона *</label>
+                            <input type="text" name="name" class="form-control" value="{{ salon.name if salon else '' }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Категория *</label>
+                            <select name="category" class="form-select" required>
+                                <option value="">Выберите категорию</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}" {% if salon and salon.category == cat %}selected{% endif %}>{{ cat }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Район</label>
+                            <select name="district" class="form-select">
+                                <option value="">Выберите район</option>
+                                {% for dist in districts %}
+                                <option value="{{ dist }}" {% if salon and salon.district == dist %}selected{% endif %}>{{ dist }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label>Описание</label>
+                        <textarea name="description" class="form-control" rows="4">{{ salon.description if salon else '' }}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Адрес</label>
+                            <input type="text" name="address" class="form-control" value="{{ salon.address if salon else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Телефон</label>
+                            <input type="text" name="phone" class="form-control" value="{{ salon.phone if salon else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Время работы</label>
+                            <input type="text" name="working_hours" class="form-control" value="{{ salon.working_hours if salon else '' }}" placeholder="Напр.: Пн-Пт: 9:00-20:00, Сб: 10:00-18:00">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="is_verified" class="form-check-input" id="verified" {% if salon and salon.is_verified %}checked{% endif %}>
+                        <label class="form-check-label" for="verified">Проверенный салон</label>
+                    </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <label>Категория *</label>
-                    <select name="category" class="form-select" required>
-                        <option value="">Выберите категорию</option>
-                        {% for cat in categories %}
-                        <option value="{{ cat }}" {% if salon and salon.category == cat %}selected{% endif %}>{{ cat }}</option>
-                        {% endfor %}
-                    </select>
+                
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <label class="form-label fw-bold">Изображение салона</label>
+                            
+                            <!-- Превью изображения -->
+                            <div class="text-center mb-3">
+                                <img id="imagePreview" 
+                                     src="{{ salon.image_url if salon and salon.image_url else '/static/img/default.png' }}" 
+                                     alt="Превью" 
+                                     style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover;">
+                            </div>
+                            
+                            <!-- Поле для загрузки файла -->
+                            <div class="mb-3">
+                                <input type="file" name="image_file" id="imageFile" class="form-control" accept="image/*" onchange="previewImage(this)">
+                                <small class="text-muted">Поддерживаемые форматы: PNG, JPG, JPEG, GIF, WEBP. Максимум 16MB</small>
+                            </div>
+                            
+                            <!-- Или URL изображения -->
+                            <div class="mb-3">
+                                <label class="form-label">Или URL изображения</label>
+                                <input type="text" name="image_url" class="form-control" value="{{ salon.image_url if salon else '' }}" placeholder="https://example.com/image.jpg">
+                                <small class="text-muted">Если загружено файлом, URL будет проигнорирован</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="mb-3">
-                <label>Описание</label>
-                <textarea name="description" class="form-control" rows="4">{{ salon.description if salon else '' }}</textarea>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label>Адрес</label>
-                    <input type="text" name="address" class="form-control" value="{{ salon.address if salon else '' }}">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label>Район</label>
-                    <select name="district" class="form-select">
-                        <option value="">Выберите район</option>
-                        {% for dist in districts %}
-                        <option value="{{ dist }}" {% if salon and salon.district == dist %}selected{% endif %}>{{ dist }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label>Телефон</label>
-                    <input type="text" name="phone" class="form-control" value="{{ salon.phone if salon else '' }}">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label>Время работы</label>
-                    <input type="text" name="working_hours" class="form-control" value="{{ salon.working_hours if salon else '' }}" placeholder="Напр.: Пн-Пт: 9:00-20:00, Сб: 10:00-18:00">
-                </div>
-            </div>
-            
-            <div class="mb-3">
-                <label>URL изображения</label>
-                <input type="text" name="image_url" class="form-control" value="{{ salon.image_url if salon else '/static/img/default.png' }}">
-                <small class="text-muted">Оставьте пустым для использования изображения по умолчанию</small>
-            </div>
-            
-            <div class="mb-3 form-check">
-                <input type="checkbox" name="is_verified" class="form-check-input" id="verified" {% if salon and salon.is_verified %}checked{% endif %}>
-                <label class="form-check-label" for="verified">Проверенный салон</label>
             </div>
             
             <div class="mt-4">
@@ -73,4 +100,16 @@
         </form>
     </div>
 </div>
+
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 {% endblock %}

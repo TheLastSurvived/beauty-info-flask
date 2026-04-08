@@ -18,3 +18,16 @@ class Config:
     TOP_SALONS_LIMIT = 3
     RECENT_REVIEWS_LIMIT = 4
     BLOG_POSTS_HOME_LIMIT = 3
+
+    # Настройки загрузки изображений
+    UPLOAD_FOLDER = 'static/uploads'
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+    
+    # Настройки для оптимизации изображений
+    IMAGE_QUALITY = 85
+    IMAGE_MAX_WIDTH = 1200
+    IMAGE_MAX_HEIGHT = 1200
+    THUMBNAIL_SIZE = (300, 200)
+    BLOG_IMAGE_SIZE = (800, 600)
+    SALON_IMAGE_SIZE = (600, 400)
