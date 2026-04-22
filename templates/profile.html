@@ -3,6 +3,17 @@
 
 {% block content %}
 <div class="container mt-5 pt-4">
+   {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+          <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'error' %}x-circle{% else %}info-circle{% endif %} me-2"></i>
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
   <div class="row">
     <!-- Боковая панель профиля -->
     <div class="col-md-4">
@@ -35,6 +46,10 @@
               Комментарии в блоге
               <span class="badge bg-beauty rounded-pill">{{ current_user.blog_comments|length }}</span>
             </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Избранные салоны
+              <span class="badge bg-beauty rounded-pill">{{ current_user.favorite_salons.count() }}</span>
+            </li>
           </ul>
         </div>
       </div>
@@ -48,7 +63,8 @@
           <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Редактирование профиля</h5>
         </div>
         <div class="card-body">
-          <form method="post" action="/profile/update" class="needs-validation" novalidate>
+          <form method="post" action="/profile/update" class="needs-validation" novalidate id="profileForm">
+
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="first_name" class="form-label">Имя</label>
@@ -69,10 +85,16 @@
             </div>
             
             <div class="mb-3">
-              <label for="phone" class="form-label">Телефон</label>
-              <input type="tel" class="form-control" id="phone" name="phone" 
-                     value="{{ current_user.phone or '' }}" placeholder="+375 (XX) XXX-XX-XX">
+            <label for="phone" class="form-label">Телефон</label>
+            <input type="tel" class="form-control" id="phone" name="phone" 
+                  value="{{ current_user.phone or '' }}" 
+                  placeholder="+375 (XX) XXX-XX-XX"
+                  pattern="\+375\s\([0-9]{2}\)\s[0-9]{3}-[0-9]{2}-[0-9]{2}">
+            <div class="invalid-feedback">
+              Пожалуйста, введите номер в формате: +375 (XX) XXX-XX-XX
             </div>
+            <div class="form-text">Формат: +375 (XX) XXX-XX-XX</div>
+          </div>
             
             <hr class="my-4">
             
@@ -101,6 +123,66 @@
           </form>
         </div>
       </div>
+      
+      <!-- Избранные салоны -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0"><i class="bi bi-heart-fill text-danger me-2"></i>Избранные салоны</h5>
+    <a href="/catalog" class="btn btn-sm btn-beauty">
+      <i class="bi bi-plus-circle me-1"></i>Добавить
+    </a>
+  </div>
+  <div class="card-body">
+    {% set favorite_salons = current_user.favorite_salons.all() %}
+    {% if favorite_salons %}
+    <div class="list-group list-group-flush" id="favoritesContainer">
+      {% for salon in favorite_salons %}
+      <div class="list-group-item favorite-item px-0" data-salon-id="{{ salon.id }}">
+        <div class="row align-items-center">
+          <div class="col-3 col-md-2">
+            <img src="{{ salon.image_url }}" alt="{{ salon.name }}" class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover;">
+          </div>
+          <div class="col-6 col-md-7">
+            <h6 class="mb-1">{{ salon.name }}</h6>
+            <div class="rating small mb-1">
+              {% for i in range(5) %}
+                {% if i < salon.rating|int %}
+                <i class="bi bi-star-fill text-warning"></i>
+                {% elif i < salon.rating %}
+                <i class="bi bi-star-half text-warning"></i>
+                {% else %}
+                <i class="bi bi-star text-secondary"></i>
+                {% endif %}
+              {% endfor %}
+              <span class="text-muted ms-1">({{ salon.reviews_count }})</span>
+            </div>
+            <p class="small text-muted mb-0">
+              <i class="bi bi-geo-alt me-1"></i>{{ salon.address|truncate(40) }}
+            </p>
+          </div>
+          <div class="col-3 col-md-3 text-end">
+            <a href="/catalog/{{ salon.id }}" class="btn btn-sm btn-beauty me-1 mb-1 mb-md-0">
+              <i class="bi bi-eye"></i>
+            </a>
+            <button class="btn btn-sm btn-outline-danger remove-favorite" data-salon-id="{{ salon.id }}" data-salon-name="{{ salon.name }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+      <i class="bi bi-heart display-4 text-muted mb-3 d-block"></i>
+      <p class="text-muted mb-3">У вас пока нет избранных салонов</p>
+      <a href="/catalog" class="btn btn-beauty">
+        <i class="bi bi-search me-2"></i>Найти салоны
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
       
       <!-- Мои отзывы -->
       <div class="card mb-4">
@@ -206,7 +288,9 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Валидация формы профиля
+    // ==================== ВАЛИДАЦИЯ ФОРМЫ ПРОФИЛЯ ====================
+    
+    // Валидация формы профиля (существующая)
     const form = document.querySelector('.needs-validation');
     if (form) {
       form.addEventListener('submit', function(event) {
@@ -218,9 +302,11 @@
       }, false);
     }
     
-    // Ограничение на ввод телефона
+    // ==================== ФОРМАТИРОВАНИЕ И ВАЛИДАЦИЯ ТЕЛЕФОНА ====================
+    
     const phoneInput = document.getElementById('phone');
     if (phoneInput) {
+      // Функция форматирования телефона при вводе
       phoneInput.addEventListener('input', function(e) {
         let value = this.value.replace(/\D/g, '');
         if (value.length > 12) value = value.substring(0, 12);
@@ -235,7 +321,177 @@
         
         this.value = formatted;
       });
+      
+      // Функция валидации телефона
+      function isValidPhone(phone) {
+        const phoneRegex = /^\+375\s\([0-9]{2}\)\s[0-9]{3}-[0-9]{2}-[0-9]{2}$/;
+        return phoneRegex.test(phone);
+      }
+      
+      // Проверка при потере фокуса
+      phoneInput.addEventListener('blur', function() {
+        if (this.value && !isValidPhone(this.value)) {
+          this.classList.add('is-invalid');
+        } else {
+          this.classList.remove('is-invalid');
+        }
+      });
     }
+    
+    // ==================== ВАЛИДАЦИЯ ВСЕЙ ФОРМЫ ПРОФИЛЯ ====================
+    
+    const profileForm = document.getElementById('profileForm');
+    if (profileForm) {
+      profileForm.addEventListener('submit', function(event) {
+        let isValid = true;
+        
+        // Валидация телефона (если заполнен)
+        const phone = document.getElementById('phone');
+        if (phone && phone.value) {
+          const phoneRegex = /^\+375\s\([0-9]{2}\)\s[0-9]{3}-[0-9]{2}-[0-9]{2}$/;
+          if (!phoneRegex.test(phone.value)) {
+            phone.classList.add('is-invalid');
+            isValid = false;
+          } else {
+            phone.classList.remove('is-invalid');
+          }
+        }
+        
+        // Валидация пароля
+        const newPassword = document.getElementById('new_password');
+        const confirmPassword = document.getElementById('confirm_password');
+        
+        if (newPassword && newPassword.value) {
+          if (newPassword.value.length < 6) {
+            newPassword.classList.add('is-invalid');
+            isValid = false;
+          } else {
+            newPassword.classList.remove('is-invalid');
+          }
+          
+          if (confirmPassword && newPassword.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid');
+            isValid = false;
+          } else if (confirmPassword) {
+            confirmPassword.classList.remove('is-invalid');
+          }
+        }
+        
+        if (!isValid) {
+          event.preventDefault();
+        }
+      });
+    }
+    
+    // ==================== СТАРЫЙ КОД (оставляем как есть) ====================
+    
+    // Ограничение на ввод телефона (старая версия - можно удалить, но оставим для совместимости)
+    // Уже заменено на новый код выше
+    
+    // Функция для показа уведомлений
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = 'position-fixed bottom-0 end-0 p-3';
+      toast.style.zIndex = '11';
+      toast.style.cursor = 'pointer';
+      
+      let bgColor = 'bg-success';
+      if (type === 'error') bgColor = 'bg-danger';
+      if (type === 'warning') bgColor = 'bg-warning';
+      
+      toast.innerHTML = `
+        <div class="toast show" role="alert">
+          <div class="toast-header ${bgColor} text-white">
+            <strong class="me-auto">Уведомление</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+          </div>
+          <div class="toast-body">
+            ${message}
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+      
+      toast.addEventListener('click', () => toast.remove());
+    }
+    
+    // Удаление из избранного на странице профиля
+    document.querySelectorAll('.remove-favorite').forEach(function(button) {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const salonId = this.getAttribute('data-salon-id');
+        const salonName = this.getAttribute('data-salon-name');
+        const favoriteItem = this.closest('.favorite-item');
+        
+        fetch('/favorites/remove', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ salon_id: salonId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            favoriteItem.remove();
+            showToast(`"${salonName}" удален из избранного`, 'info');
+            
+            // Обновляем счетчик в боковой панели
+            const counter = document.querySelector('.list-group-item .badge:last-child');
+            if (counter) {
+              let count = parseInt(counter.textContent);
+              counter.textContent = count - 1;
+            }
+            
+            // Проверяем, остались ли салоны
+            const remainingItems = document.querySelectorAll('#favoritesContainer .favorite-item');
+            if (remainingItems.length === 0) {
+              const container = document.getElementById('favoritesContainer');
+              if (container) {
+                container.innerHTML = `
+                  <div class="col-12 text-center py-4">
+                    <i class="bi bi-heart display-4 text-muted mb-3 d-block"></i>
+                    <p class="text-muted mb-3">У вас пока нет избранных салонов</p>
+                    <a href="/catalog" class="btn btn-beauty">
+                      <i class="bi bi-search me-2"></i>Найти салоны
+                    </a>
+                  </div>
+                `;
+              }
+            }
+          } else {
+            showToast(data.message || 'Ошибка при удалении', 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showToast('Произошла ошибка. Попробуйте позже.', 'error');
+        });
+      });
+    });
   });
 </script>
+
+<style>
+  .bg-beauty {
+    background-color: var(--primary-color);
+  }
+  .text-beauty {
+    color: var(--primary-color);
+  }
+  .favorite-item .catalog-salon-card {
+    height: 100%;
+  }
+  .remove-favorite:hover {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+  }
+</style>
 {% endblock %}

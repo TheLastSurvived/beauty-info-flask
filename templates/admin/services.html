@@ -13,12 +13,12 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th style="width: 50px;">ID</th>
                     <th>Салон</th>
-                    <th>Категория</th>
+                    <th style="width: 120px;">Категория</th>
                     <th>Услуга</th>
-                    <th>Цена</th>
-                    <th>Действия</th>
+                    <th style="width: 100px;">Цена</th>
+                    <th style="width: 100px;">Действия</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,8 +29,8 @@
                     <td>{{ service.category or '-' }}</td>
                     <td>{{ service.name }}</td>
                     <td>{% if service.price %}{{ service.price }} BYN{% else %}—{% endif %}</td>
-                    <td>
-                        <a href="{{ url_for('admin.edit_service', id=service.id) }}" class="btn btn-sm btn-outline-beauty me-1">
+                    <td class="text-nowrap">
+                        <a href="{{ url_for('admin.edit_service', id=service.id) }}" class="btn btn-sm btn-outline-beauty">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <form method="post" action="{{ url_for('admin.delete_service', id=service.id) }}" class="d-inline delete-confirm">

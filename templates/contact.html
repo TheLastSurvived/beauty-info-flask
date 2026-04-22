@@ -1,4 +1,15 @@
 {% extends "base.html" %} {% block content %}
+<style>
+  /* Добавьте в начало contact.html или в общий style.css */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Отступ для фиксированного хедера */
+  .info-card, .contact-card, .contact-form-card {
+    scroll-margin-top: 100px;
+  }
+</style>
 <!-- Контент страницы контактов -->
 <div class="container mt-5 pt-4">
   <!-- Хлебные крошки -->
@@ -48,7 +59,7 @@
               </div>
               <div>
                 <h5>Телефон</h5>
-                <p>+375 (25) 123-45-67</p>
+                <p>+375(29) 861-56-93</p>
                 <p class="small text-muted">Пн-Пт: 9:00-18:00</p>
               </div>
             </div>
@@ -262,7 +273,7 @@
           <h5>Способы связи</h5>
           <ul>
             <li>Email: support@beauty-city.by</li>
-            <li>Телефон: +375 (25) 123-45-67 (Пн-Пт, 9:00-18:00)</li>
+            <li>Телефон: +375(29) 861-56-93 (Пн-Пт, 9:00-18:00)</li>
             <li>Форма обратной связи ниже</li>
           </ul>
           
@@ -349,7 +360,7 @@
             <i class="bi bi-shield-check me-2"></i> Политика конфиденциальности
           </a>
           <a href="#for-salons" class="nav-item side-item">
-            <i class="bi bi-building me-2"></i> Для салонов
+            <i class="bi bi-scissors me-2"></i> Для салонов
           </a>
           <a href="#ads" class="nav-item side-item">
             <i class="bi bi-megaphone me-2"></i> Реклама на сайте

@@ -244,14 +244,20 @@
                 </p>
                 {% endif %}
 -->
-                <div class="d-flex justify-content-between align-items-center">
-                  <a href="/catalog/{{ salon.id }}" class="btn btn-beauty btn-sm">
-                    <i class="bi bi-eye me-1"></i> Подробнее
-                  </a>
-                  <button class="btn btn-outline-beauty btn-sm">
-                    <i class="bi bi-heart"></i>
-                  </button>
-                </div>
+               
+  <div class="d-flex align-items-center" style="gap: 12px; margin-top: auto;">
+  <a href="/catalog/{{ salon.id }}" class="btn btn-beauty btn-sm flex-grow-1">
+    <i class="bi bi-eye me-1"></i> Подробнее
+  </a>
+  {% if current_user.is_authenticated %}
+  <button class="btn {% if salon.id in user_favorites %}btn-beauty{% else %}btn-outline-beauty{% endif %} btn-sm favorite-btn" 
+          style="min-width: 42px;"
+          data-salon-id="{{ salon.id }}"
+          data-salon-name="{{ salon.name }}">
+    <i class="bi {% if salon.id in user_favorites %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+  </button>
+  {% endif %}
+</div>
               </div>
             </div>
           </div>
@@ -355,64 +361,112 @@
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-
-    // Обработчик для кнопок избранного
-    document.querySelectorAll('.btn-outline-beauty').forEach(function(button) {
-      button.addEventListener('click', function() {
-        const salonCard = this.closest('.catalog-salon-card');
-        const salonName = salonCard.querySelector('.salon-name').textContent;
-        
-        // Меняем иконку при клике
-        const icon = this.querySelector('i');
-        if (icon.classList.contains('bi-heart')) {
-          icon.classList.remove('bi-heart');
-          icon.classList.add('bi-heart-fill');
-          this.classList.remove('btn-outline-beauty');
-          this.classList.add('btn-beauty');
-          showToast(`Салон "${salonName}" добавлен в избранное`);
-        } else {
-          icon.classList.remove('bi-heart-fill');
-          icon.classList.add('bi-heart');
-          this.classList.remove('btn-beauty');
-          this.classList.add('btn-outline-beauty');
-          showToast(`Салон "${salonName}" удален из избранного`);
-        }
-      });
-    });
-
-    // Функция для показа уведомлений
-    function showToast(message) {
-      // Создаем простое уведомление
+    
+    // Проверка авторизации
+    const isAuthenticated = {{ current_user.is_authenticated|lower }};
+    
+    // Функция показа уведомлений
+    function showToast(message, type = 'success') {
       const toast = document.createElement('div');
       toast.className = 'position-fixed bottom-0 end-0 p-3';
       toast.style.zIndex = '11';
+      toast.style.cursor = 'pointer';
       
-      const toastInner = document.createElement('div');
-      toastInner.className = 'toast show';
-      toastInner.innerHTML = `
-        <div class="toast-header bg-success text-white">
-          <strong class="me-auto">Уведомление</strong>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-        </div>
-        <div class="toast-body">
-          ${message}
+      let bgColor = 'bg-success';
+      let icon = 'bi-check-circle-fill';
+      if (type === 'error') {
+        bgColor = 'bg-danger';
+        icon = 'bi-x-circle-fill';
+      } else if (type === 'warning') {
+        bgColor = 'bg-warning';
+        icon = 'bi-exclamation-triangle-fill';
+      } else if (type === 'info') {
+        bgColor = 'bg-info';
+        icon = 'bi-info-circle-fill';
+      }
+      
+      toast.innerHTML = `
+        <div class="toast show" role="alert" style="min-width: 280px;">
+          <div class="toast-header ${bgColor} text-white">
+            <i class="bi ${icon} me-2"></i>
+            <strong class="me-auto">Уведомление</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+          </div>
+          <div class="toast-body">
+            ${message}
+          </div>
         </div>
       `;
       
-      toast.appendChild(toastInner);
       document.body.appendChild(toast);
-      
-      // Удаляем через 3 секунды
-      setTimeout(() => {
-        toast.remove();
-      }, 3000);
+      setTimeout(() => toast.remove(), 3000);
+      toast.addEventListener('click', () => toast.remove());
     }
-
-    // Функция для сброса страницы при изменении фильтров
+    
+    // Обработчик кнопок избранного
+    document.querySelectorAll('.favorite-btn').forEach(function(button) {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (!isAuthenticated) {
+          showToast('Для добавления в избранное необходимо <a href="/login" style="color: white; text-decoration: underline;">войти</a>', 'warning');
+          return;
+        }
+        
+        const salonId = this.getAttribute('data-salon-id');
+        const salonName = this.getAttribute('data-salon-name');
+        const icon = this.querySelector('i');
+        const isFavorite = icon.classList.contains('bi-heart-fill');
+        
+        fetch(isFavorite ? '/favorites/remove' : '/favorites/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ salon_id: salonId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            if (isFavorite) {
+              icon.classList.remove('bi-heart-fill');
+              icon.classList.add('bi-heart');
+              this.classList.remove('btn-beauty');
+              this.classList.add('btn-outline-beauty');
+              showToast(`"${salonName}" удален из избранного`, 'info');
+            } else {
+              icon.classList.remove('bi-heart');
+              icon.classList.add('bi-heart-fill');
+              this.classList.remove('btn-outline-beauty');
+              this.classList.add('btn-beauty');
+              showToast(`"${salonName}" добавлен в избранное`, 'success');
+            }
+          } else {
+            showToast(data.message || 'Ошибка', 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showToast('Произошла ошибка', 'error');
+        });
+      });
+    });
+    
+    // Сброс страницы при изменении фильтров
     document.querySelectorAll('#filterForm input[type="radio"], #filterForm select').forEach(function(element) {
       element.addEventListener('change', function() {
-        // Устанавливаем страницу в 1 при изменении фильтров
-        document.querySelector('#filterForm input[name="page"]').value = '1';
+        const pageInput = document.querySelector('#filterForm input[name="page"]');
+        if (pageInput) pageInput.value = '1';
+      });
+    });
+    
+    // Анимация карточек
+    document.querySelectorAll('.catalog-salon-card').forEach(function(card) {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px)';
+        this.style.transition = 'transform 0.3s ease';
+      });
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
       });
     });
   });

@@ -11,8 +11,20 @@
     <!-- Заголовок -->
     <h2 class="auth-title">Создание аккаунта</h2>
 
+    <!-- Блок для отображения flash-сообщений -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <!-- Форма регистрации -->
-    <form id="registerForm" method="post">
+    <form id="registerForm" method="post" novalidate>
       <!-- Имя и Фамилия -->
       <div class="row mb-3">
         <div class="col-md-6">
@@ -22,8 +34,8 @@
               class="form-control"
               id="firstName"
               placeholder="Имя"
-              required
               name="first_name"
+              value="{{ request.form.get('first_name', '') }}"
             />
             <label for="firstName">Имя</label>
           </div>
@@ -35,8 +47,8 @@
               class="form-control"
               id="lastName"
               placeholder="Фамилия"
-              required
               name="last_name"
+              value="{{ request.form.get('last_name', '') }}"
             />
             <label for="lastName">Фамилия</label>
           </div>
@@ -52,8 +64,12 @@
           placeholder="name@example.com"
           required
           name="email"
+          value="{{ request.form.get('email', '') }}"
         />
         <label for="email">Email адрес</label>
+        <div class="invalid-feedback">
+          Пожалуйста, введите корректный email адрес
+        </div>
       </div>
 
       <!-- Пароль -->
@@ -67,6 +83,9 @@
           name="password"
         />
         <label for="password">Пароль</label>
+        <div class="invalid-feedback">
+          Пароль должен содержать не менее 6 символов
+        </div>
       </div>
 
       <!-- Кнопка регистрации -->
@@ -82,4 +101,77 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    
+    // Функция валидации email
+    function isValidEmail(email) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailRegex.test(email);
+    }
+    
+    // Функция валидации пароля
+    function isValidPassword(password) {
+      return password.length >= 6;
+    }
+    
+    // Валидация при отправке
+    form.addEventListener('submit', function(event) {
+      let isValid = true;
+      
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      
+      // Валидация email
+      if (!isValidEmail(email.value)) {
+        email.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        email.classList.remove('is-invalid');
+      }
+      
+      // Валидация пароля
+      if (!isValidPassword(password.value)) {
+        password.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        password.classList.remove('is-invalid');
+      }
+      
+      if (!isValid) {
+        event.preventDefault();
+      }
+    });
+    
+    // Очистка ошибок при вводе
+    document.getElementById('email').addEventListener('input', function() {
+      if (isValidEmail(this.value)) {
+        this.classList.remove('is-invalid');
+      }
+    });
+    
+    document.getElementById('password').addEventListener('input', function() {
+      if (isValidPassword(this.value)) {
+        this.classList.remove('is-invalid');
+      }
+    });
+  });
+</script>
+
+<style>
+  .alert {
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: none;
+  }
+  .invalid-feedback {
+    display: block;
+    font-size: 0.8rem;
+  }
+</style>
 {% endblock %}

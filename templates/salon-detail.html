@@ -1,5 +1,20 @@
 {% extends "base.html" %} {% block content %}
 <div class="container mt-5 pt-4">
+
+<div class="container mt-5 pt-4">
+  <!-- Flash сообщения -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+          <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'error' %}x-circle{% else %}info-circle{% endif %} me-2"></i>
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
   <!-- Хлебные крошки -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -182,7 +197,7 @@
 {% endif %}
       
       <!-- Отзывы -->
-      <div class="card">
+<div class="card" id="reviews">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h5 class="card-title mb-0">Отзывы ({{ reviews|length }})</h5>
@@ -194,7 +209,7 @@
     {% if reviews %}
     <div class="review-list">
       {% for review in reviews[:5] %}
-      <div class="review-item mb-3 p-3 border rounded">
+      <div class="review-item mb-3 p-3 border rounded" id="review-{{ review.id }}">
         <div class="d-flex justify-content-between align-items-start mb-2">
           <div class="d-flex align-items-center">
             <i class="bi bi-person-circle me-2" ></i>
@@ -231,7 +246,7 @@
       <!-- Кнопка показать все отзывы -->
       {% if reviews|length > 5 %}
       <div class="text-center mt-3">
-        <button class="btn btn-outline-beauty" type="button" data-bs-toggle="collapse" data-bs-target="#allReviews" aria-expanded="false" aria-controls="allReviews">
+        <button class="btn btn-outline-beauty" type="button" id="showAllReviewsBtn" data-bs-toggle="collapse" data-bs-target="#allReviews" aria-expanded="false" aria-controls="allReviews">
           <i class="bi bi-chevron-down me-1"></i>
           Показать все отзывы ({{ reviews|length }})
         </button>
@@ -240,7 +255,7 @@
       <!-- Все отзывы (скрыты по умолчанию) -->
       <div class="collapse" id="allReviews">
         {% for review in reviews[5:] %}
-        <div class="review-item mb-3 p-3 border rounded mt-2">
+        <div class="review-item mb-3 p-3 border rounded mt-2" id="review-{{ review.id }}">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div class="d-flex align-items-center">
               <i class="bi bi-person-circle me-2" ></i>
@@ -339,67 +354,153 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Обработчик кнопки избранного
-    const favoriteBtn = document.getElementById('favoriteBtn');
-    if (favoriteBtn) {
-      favoriteBtn.addEventListener('click', function() {
-        const salonName = document.querySelector('.salon-title').textContent;
-        const icon = this.querySelector('i');
-        
-        if (icon.classList.contains('bi-heart')) {
-          icon.classList.remove('bi-heart');
-          icon.classList.add('bi-heart-fill');
-          this.classList.remove('btn-outline-beauty');
-          this.classList.add('btn-beauty');
-          showToast(`"${salonName}" добавлен в избранное`);
-        } else {
-          icon.classList.remove('bi-heart-fill');
-          icon.classList.add('bi-heart');
-          this.classList.remove('btn-beauty');
-          this.classList.add('btn-outline-beauty');
-          showToast(`"${salonName}" удален из избранного`);
-        }
-      });
+    // ==================== ПРОВЕРКА ХЕША ДЛЯ ПРОКРУТКИ К НОВОМУ ОТЗЫВУ ====================
+    
+    function scrollToReview(reviewId) {
+      if (!reviewId) return;
+      
+      const reviewElement = document.getElementById(reviewId);
+      if (reviewElement) {
+        setTimeout(function() {
+          reviewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          reviewElement.style.transition = 'background-color 0.5s';
+          reviewElement.style.backgroundColor = '#fff3cd';
+          setTimeout(function() {
+            reviewElement.style.backgroundColor = '';
+          }, 2000);
+        }, 300);
+      }
     }
     
-    // Функция уведомлений
-    function showToast(message) {
+    if (window.location.hash && window.location.hash.startsWith('#review-')) {
+      const reviewId = window.location.hash.substring(1);
+      const reviewElement = document.getElementById(reviewId);
+      const allReviewsCollapse = document.getElementById('allReviews');
+      
+      if (reviewElement && allReviewsCollapse) {
+        if (!reviewElement.closest('#allReviews') || 
+            (reviewElement.closest('#allReviews') && !allReviewsCollapse.classList.contains('show'))) {
+          
+          const showAllBtn = document.getElementById('showAllReviewsBtn');
+          if (showAllBtn) {
+            const bsCollapse = new bootstrap.Collapse(allReviewsCollapse, { toggle: true });
+            setTimeout(function() { scrollToReview(reviewId); }, 400);
+          } else {
+            scrollToReview(reviewId);
+          }
+        } else {
+          scrollToReview(reviewId);
+        }
+      } else if (reviewElement) {
+        scrollToReview(reviewId);
+      }
+      
+      setTimeout(function() {
+        history.pushState(null, '', window.location.pathname);
+      }, 1000);
+    }
+    
+    // ==================== ИЗБРАННОЕ ====================
+    const isAuthenticated = {{ current_user.is_authenticated|lower }};
+    const userFavorites = {{ user_favorites|tojson }};
+    const salonId = {{ salon.id }};
+    
+    function showToast(message, type = 'success') {
       const toast = document.createElement('div');
       toast.className = 'position-fixed bottom-0 end-0 p-3';
       toast.style.zIndex = '11';
+      toast.style.cursor = 'pointer';
       
-      const toastInner = document.createElement('div');
-      toastInner.className = 'toast show';
-      toastInner.innerHTML = `
-        <div class="toast-header bg-success text-white">
-          <strong class="me-auto">Уведомление</strong>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-        </div>
-        <div class="toast-body">
-          ${message}
+      let bgColor = 'bg-success';
+      let icon = 'bi-check-circle-fill';
+      if (type === 'error') {
+        bgColor = 'bg-danger';
+        icon = 'bi-x-circle-fill';
+      } else if (type === 'warning') {
+        bgColor = 'bg-warning';
+        icon = 'bi-exclamation-triangle-fill';
+      } else if (type === 'info') {
+        bgColor = 'bg-info';
+        icon = 'bi-info-circle-fill';
+      }
+      
+      toast.innerHTML = `
+        <div class="toast show" role="alert" style="min-width: 280px;">
+          <div class="toast-header ${bgColor} text-white">
+            <i class="bi ${icon} me-2"></i>
+            <strong class="me-auto">Уведомление</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+          </div>
+          <div class="toast-body">
+            ${message}
+          </div>
         </div>
       `;
       
-      toast.appendChild(toastInner);
       document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.remove();
-      }, 3000);
+      setTimeout(() => toast.remove(), 3000);
+      toast.addEventListener('click', () => toast.remove());
     }
     
-    // Обработка ошибок изображений
-    const images = document.querySelectorAll('img');
-    images.forEach(img => {
-      img.addEventListener('error', function() {
-        this.src = '/static/img/default.png';
-        this.onerror = null;
+    // Обработчик кнопки избранного
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    if (favoriteBtn) {
+      const isFavorite = userFavorites.includes(salonId);
+      const icon = favoriteBtn.querySelector('i');
+      
+      if (isFavorite) {
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill');
+        favoriteBtn.classList.remove('btn-outline-beauty');
+        favoriteBtn.classList.add('btn-beauty');
+      }
+      
+      favoriteBtn.addEventListener('click', function() {
+        if (!isAuthenticated) {
+          showToast('Для добавления в избранное необходимо <a href="/login?next={{ request.path }}" style="color: white; text-decoration: underline;">войти</a>', 'warning');
+          return;
+        }
+        
+        const salonName = document.querySelector('.salon-title').textContent;
+        const icon = this.querySelector('i');
+        const isCurrentlyFavorite = icon.classList.contains('bi-heart-fill');
+        
+        const url = isCurrentlyFavorite ? '/favorites/remove' : '/favorites/add';
+        
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ salon_id: salonId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            if (isCurrentlyFavorite) {
+              icon.classList.remove('bi-heart-fill');
+              icon.classList.add('bi-heart');
+              this.classList.remove('btn-beauty');
+              this.classList.add('btn-outline-beauty');
+              showToast(`"${salonName}" удален из избранного`, 'info');
+            } else {
+              icon.classList.remove('bi-heart');
+              icon.classList.add('bi-heart-fill');
+              this.classList.remove('btn-outline-beauty');
+              this.classList.add('btn-beauty');
+              showToast(`"${salonName}" добавлен в избранное`, 'success');
+            }
+          } else {
+            showToast(data.message || 'Ошибка', 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showToast('Произошла ошибка. Попробуйте позже.', 'error');
+        });
       });
-    });
-  });
-
-  // Добавьте этот скрипт в существующий script блок
-  document.addEventListener('DOMContentLoaded', function() {
+    }
+    
+    // ==================== ОТЗЫВЫ ====================
+    
     // Валидация формы отзыва
     const reviewForm = document.getElementById('reviewForm');
     if (reviewForm) {
@@ -412,13 +513,42 @@
       });
     }
     
-    // Проверка авторизации при попытке оставить отзыв
-    const reviewBtn = document.querySelector('[data-bs-target="#addReviewModal"]');
-    if (reviewBtn && !{{ current_user.is_authenticated|tojson }}) {
-      reviewBtn.addEventListener('click', function(e) {
+    // ЕДИНЫЙ ОБРАБОТЧИК ДЛЯ ОТЗЫВОВ - проверка авторизации
+    const isAuth = {{ current_user.is_authenticated|tojson }};
+    
+    // Функция для проверки авторизации перед открытием модального окна
+    function checkAuthAndOpenModal(e) {
+      if (!isAuth) {
         e.preventDefault();
-        if (confirm('Для добавления отзыва необходимо войти в систему. Перейти на страницу входа?')) {
+        e.stopPropagation();
+        const userConfirmed = confirm('Для добавления отзыва необходимо войти в систему. Перейти на страницу входа?');
+        if (userConfirmed) {
           window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+        }
+        return false;
+      }
+      return true;
+    }
+    
+    // Обработчик для кнопки "Написать отзыв"
+    const reviewBtn = document.querySelector('[data-bs-target="#addReviewModal"]');
+    if (reviewBtn) {
+      reviewBtn.addEventListener('click', function(e) {
+        if (!checkAuthAndOpenModal(e)) {
+          return;
+        }
+        // Если авторизован, модальное окно откроется автоматически
+      });
+    }
+    
+    // Дополнительная защита: предотвращаем открытие модального окна через show.bs.modal
+    const addReviewModal = document.getElementById('addReviewModal');
+    if (addReviewModal) {
+      addReviewModal.addEventListener('show.bs.modal', function(e) {
+        if (!isAuth) {
+          e.preventDefault();
+          // Не показываем второй confirm, так как он уже был показан при клике
+          return false;
         }
       });
     }
@@ -430,6 +560,16 @@
       reviewText.placeholder = 'Дорогой {{ current_user.first_name or "пользователь" }}, поделитесь вашим опытом...';
     }
     {% endif %}
+    
+    // ==================== ОБРАБОТКА ИЗОБРАЖЕНИЙ ====================
+    
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+      img.addEventListener('error', function() {
+        this.src = '/static/img/default.png';
+        this.onerror = null;
+      });
+    });
   });
 </script>
 {% endblock %}

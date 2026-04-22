@@ -23,14 +23,14 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th style="width: 50px;">ID</th>
                     <th>Название</th>
-                    <th>Категория</th>
-                    <th>Автор</th>
-                    <th>Просмотры</th>
-                    <th>Статус</th>
-                    <th>Дата</th>
-                    <th>Действия</th>
+                    <th style="width: 120px;">Категория</th>
+                    <th style="width: 100px;">Автор</th>
+                    <th style="width: 80px;">Просмотры</th>
+                    <th style="width: 120px;">Статус</th>
+                    <th style="width: 100px;">Дата</th>
+                    <th style="width: 100px;">Действия</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,8 +43,8 @@
                     <td>{{ post.views_count }}</td>
                     <td>{% if post.is_published %}<span class="badge-active">Опубликована</span>{% else %}<span class="badge-inactive">Черновик</span>{% endif %}</td>
                     <td>{{ post.created_at.strftime('%d.%m.%Y') }}</td>
-                    <td>
-                        <a href="{{ url_for('admin.edit_blog_post', id=post.id) }}" class="btn btn-sm btn-outline-beauty me-1">
+                    <td class="text-nowrap">
+                        <a href="{{ url_for('admin.edit_blog_post', id=post.id) }}" class="btn btn-sm btn-outline-beauty">
                             <i class="bi bi-pencil"></i>
                         </a>
                         <form method="post" action="{{ url_for('admin.delete_blog_post', id=post.id) }}" class="d-inline delete-confirm">

@@ -11,8 +11,20 @@
         <!-- Заголовок -->
         <h2 class="auth-title">Вход в аккаунт</h2>
 
+        <!-- Блок для отображения flash-сообщений -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
         <!-- Форма входа -->
-        <form id="loginForm"  method="post">
+        <form id="loginForm" method="post">
           <!-- Email -->
           <div class="form-floating mb-3">
             <input
@@ -22,6 +34,7 @@
               placeholder="name@example.com"
               required
               name="email"
+              value="{{ request.form.get('email', '') }}"
             />
             <label for="email">Email адрес</label>
           </div>
@@ -42,7 +55,7 @@
           <!-- Запомнить меня -->
           <div class="mb-3">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="remember" />
+              <input class="form-check-input" type="checkbox" id="remember" name="remember" />
               <label class="form-check-label" for="remember">
                 Запомнить меня
               </label>
@@ -52,8 +65,6 @@
           <!-- Кнопка входа -->
           <button type="submit" class="btn btn-auth mb-3">Войти</button>
 
-       
-
         <!-- Ссылка на регистрацию -->
         <div class="auth-footer">
           <p>Еще нет аккаунта? <a href="/register">Зарегистрируйтесь</a></p>
@@ -61,11 +72,42 @@
         </div>
       </div>
     </div>
- <!-- Bootstrap JS -->
+    </form>
+  </div>
+</div>
+
+<style>
+  .alert {
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+</style>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
     
-
-
- {% endblock %}
-
-   
-
+    function isValidEmail(email) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailRegex.test(email);
+    }
+    
+    emailInput.addEventListener('input', function() {
+      if (this.value && !isValidEmail(this.value)) {
+        this.classList.add('is-invalid');
+      } else {
+        this.classList.remove('is-invalid');
+      }
+    });
+    
+    form.addEventListener('submit', function(event) {
+      if (!isValidEmail(emailInput.value)) {
+        emailInput.classList.add('is-invalid');
+        event.preventDefault();
+      }
+    });
+  });
+</script>
+{% endblock %}

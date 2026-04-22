@@ -39,7 +39,13 @@ def inject_now():
 
 @app.context_processor
 def inject_user():
-    return {'current_user': current_user}
+    user_favorites = []
+    if current_user.is_authenticated:
+        user_favorites = [s.id for s in current_user.favorite_salons.all()]
+    return {
+        'current_user': current_user,
+        'user_favorites': user_favorites
+    }
 
 # Вспомогательные функции (заменили crud.py)
 def get_blog_posts(skip=0, limit=10, category=None, tag=None, search=None, only_published=True):
@@ -663,7 +669,7 @@ def register():
             
             # Автоматически входим после регистрации
             login_user(user)
-            flash('Регистрация прошла успешно!', 'success')
+            flash('Регистрация прошла успешно! Добро пожаловать!', 'success')
             return redirect(url_for('home'))
             
         except Exception as e:
@@ -684,15 +690,22 @@ def login():
         password = request.form.get('password', '').strip()
         remember = request.form.get('remember', False)
         
+        # Проверяем, существует ли пользователь
         user = User.query.filter_by(email=email).first()
         
-        if user and user.check_password(password):
-            login_user(user, remember=bool(remember))
-            next_page = request.args.get('next')
-            flash(f'Добро пожаловать, {user.first_name or user.email}!', 'success')
-            return redirect(next_page or url_for('home'))
-        else:
-            flash('Неверный email или пароль', 'error')
+        if not user:
+            flash('Пользователь с таким email не найден', 'error')
+            return render_template('login.html', title='Вход')
+        
+        if not user.check_password(password):
+            flash('Неверный пароль', 'error')
+            return render_template('login.html', title='Вход')
+        
+        # Все проверки пройдены - входим
+        login_user(user, remember=bool(remember))
+        next_page = request.args.get('next')
+        flash(f'Добро пожаловать, {user.first_name or user.email}!', 'success')
+        return redirect(next_page or url_for('home'))
     
     return render_template('login.html', title='Вход')
 
@@ -747,6 +760,7 @@ def add_review(salon_id):
     )
     
     db.session.add(review)
+    db.session.commit()  # Сначала коммитим, чтобы получить review.id
     
     # Обновляем рейтинг салона
     salon.reviews_count += 1
@@ -758,7 +772,9 @@ def add_review(salon_id):
     db.session.commit()
     
     flash('Спасибо за ваш отзыв! Он успешно добавлен.', 'success')
-    return redirect(url_for('salon_detail', salon_id=salon_id) + '#reviews')
+    
+    # Редирект с якорем на ID нового отзыва
+    return redirect(url_for('salon_detail', salon_id=salon_id) + '#review-' + str(review.id))
 
 # Обновленная функция добавления комментария с авторизацией
 @app.route('/blog/<slug>/comment', methods=['POST'])
@@ -835,7 +851,7 @@ def delete_review(review_id):
     db.session.commit()
     
     flash('Отзыв успешно удален', 'success')
-    return redirect(url_for('salon_detail', salon_id=salon_id))
+    return redirect(url_for('profile'))
 
 # Удаление комментария
 @app.route('/comment/<int:comment_id>/delete', methods=['POST'])
@@ -852,7 +868,7 @@ def delete_comment(comment_id):
     db.session.commit()
     
     flash('Комментарий успешно удален', 'success')
-    return redirect(url_for('blog_post', slug=post_slug))
+    return redirect(url_for('profile'))
 
 # Обновленный профиль пользователя
 @app.route('/profile')
@@ -875,6 +891,7 @@ def profile():
     )
 
 # Обновление профиля
+# Обновление профиля
 @app.route('/profile/update', methods=['POST'])
 @login_required
 def update_profile():
@@ -884,6 +901,14 @@ def update_profile():
     first_name = request.form.get('first_name', '').strip()
     last_name = request.form.get('last_name', '').strip()
     phone = request.form.get('phone', '').strip()
+    
+    # Валидация телефона
+    if phone:
+        import re
+        phone_regex = r'^\+375\s\([0-9]{2}\)\s[0-9]{3}-[0-9]{2}-[0-9]{2}$'
+        if not re.match(phone_regex, phone):
+            flash('Неверный формат телефона. Используйте формат: +375 (XX) XXX-XX-XX', 'error')
+            return redirect(url_for('profile'))
     
     # Обновляем данные
     user.first_name = first_name if first_name else None
@@ -919,6 +944,49 @@ def update_profile():
         flash('Ошибка при обновлении профиля', 'error')
     
     return redirect(url_for('profile'))
+
+
+
+@app.route('/favorites/add', methods=['POST'])
+@login_required
+def add_to_favorites():
+    data = request.get_json()
+    salon_id = data.get('salon_id')
+    
+    if not salon_id:
+        return jsonify({'success': False, 'message': 'ID салона не указан'}), 400
+    
+    salon = Salon.query.get(salon_id)
+    if not salon:
+        return jsonify({'success': False, 'message': 'Салон не найден'}), 404
+    
+    if salon not in current_user.favorite_salons:
+        current_user.favorite_salons.append(salon)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Салон добавлен в избранное'})
+    
+    return jsonify({'success': False, 'message': 'Салон уже в избранном'})
+
+# Удаление из избранного
+@app.route('/favorites/remove', methods=['POST'])
+@login_required
+def remove_from_favorites():
+    data = request.get_json()
+    salon_id = data.get('salon_id')
+    
+    if not salon_id:
+        return jsonify({'success': False, 'message': 'ID салона не указан'}), 400
+    
+    salon = Salon.query.get(salon_id)
+    if not salon:
+        return jsonify({'success': False, 'message': 'Салон не найден'}), 404
+    
+    if salon in current_user.favorite_salons:
+        current_user.favorite_salons.remove(salon)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Салон удален из избранного'})
+    
+    return jsonify({'success': False, 'message': 'Салон не найден в избранном'})
 
 
 @app.errorhandler(413)

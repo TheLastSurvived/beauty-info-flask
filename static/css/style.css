@@ -570,6 +570,8 @@ h5 {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: all 0.3s;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .catalog-salon-card:hover {
@@ -621,6 +623,24 @@ h5 {
 
 .catalog-salon-content {
   padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-salon-content .d-flex {
+  margin-top: auto;
+  gap: 12px;
+}
+
+.catalog-salon-content .d-flex .btn {
+  flex: 1;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .salon-name {
@@ -1179,6 +1199,8 @@ h5 {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: all 0.3s;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .blog-card:hover {
@@ -1190,6 +1212,7 @@ h5 {
   position: relative;
   height: 200px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .blog-image img {
@@ -1217,19 +1240,26 @@ h5 {
 
 .blog-content {
   padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .blog-meta {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   margin-bottom: 12px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #888;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .blog-meta span {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  gap: 4px;
 }
 
 .blog-title {
@@ -1237,13 +1267,24 @@ h5 {
   margin-bottom: 12px;
   color: var(--dark-color);
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.8em;
+  flex-shrink: 0;
 }
 
 .blog-excerpt {
   color: #666;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.5;
   margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
 }
 
 .read-more {
@@ -1253,6 +1294,9 @@ h5 {
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s;
+  margin-top: auto;
+  flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .read-more:hover {
@@ -1818,6 +1862,16 @@ h5 {
   .social-auth {
     flex-direction: column;
   }
+
+
+  .catalog-salon-content .d-flex {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .catalog-salon-content .d-flex .btn {
+    width: 100%;
+  }
 }
 
 /* Упрощенная версия поиска */
@@ -2103,5 +2157,453 @@ h5 {
   
   .error-section {
     padding-top: 100px !important;
+  }
+}
+
+
+
+.footer .row {
+  column-gap: 30px;
+  row-gap: 30px;
+}
+
+.footer .row > [class*="col-"] {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 992px) {
+  .footer .row {
+    column-gap: 20px;
+  }
+}
+
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Для совместимости с fixed header */
+.scroll-margin {
+  scroll-margin-top: 80px;
+}
+
+#reviews {
+  scroll-margin-top: 80px;
+}
+
+
+/* ==================== АДАПТИВНАЯ НАВИГАЦИЯ ==================== */
+
+/* Базовые стили */
+.navbar {
+  padding: 0.5rem 0;
+}
+
+.navbar .container {
+  max-width: 1400px;
+}
+
+.navbar-brand {
+  font-size: 1.4rem;
+  white-space: nowrap;
+}
+
+.brand-text {
+  display: inline-block;
+}
+
+.navbar-toggler {
+  border: none;
+  padding: 0.25rem 0.5rem;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+/* Стили для элементов в развернутом меню */
+.navbar-nav {
+  gap: 0.5rem;
+}
+
+.nav-link {
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  border-radius: 25px;
+  transition: all 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(212, 165, 116, 0.1);
+  color: var(--primary-color) !important;
+}
+
+/* Поиск */
+.navbar-search-form {
+  width: 250px;
+  margin: 0 1rem;
+}
+
+.navbar-search-container {
+  display: flex;
+  background: #f5f5f5;
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+.navbar-search-input {
+  border: none;
+  outline: none;
+  padding: 8px 15px;
+  background: transparent;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.navbar-search-btn {
+  background: transparent;
+  border: none;
+  padding: 0 15px;
+  color: var(--primary-color);
+  transition: all 0.3s;
+}
+
+.navbar-search-btn:hover {
+  color: var(--secondary-color);
+}
+
+/* Кнопка пользователя */
+.user-section {
+  margin-left: 0.5rem;
+}
+
+.btn-beauty {
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+}
+
+.dropdown-toggle {
+  border-radius: 25px !important;
+}
+
+/* ========== ДЛЯ БОЛЬШИХ ЭКРАНОВ (1400px+) ========== */
+@media (min-width: 1400px) {
+  .navbar .container {
+    padding: 0 20px;
+  }
+  
+  .navbar-search-form {
+    width: 280px;
+  }
+}
+
+/* ========== ДЛЯ ЭКРАНОВ 992px - 1399px (ноутбуки) ========== */
+@media (max-width: 1399px) and (min-width: 992px) {
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+  
+  .navbar-brand i {
+    font-size: 1rem;
+  }
+  
+  .nav-link {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.9rem;
+  }
+  
+  .navbar-search-form {
+    width: 200px;
+    margin: 0 0.5rem;
+  }
+  
+  .btn-beauty {
+    padding: 6px 15px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ========== ДЛЯ ПЛАНШЕТОВ (768px - 991px) ========== */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    padding: 20px 0 10px;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+  
+  /* Меню вертикально */
+  .navbar-nav {
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+  
+  .nav-item {
+    width: 100%;
+  }
+  
+  .nav-link {
+    padding: 12px 15px !important;
+    border-radius: 10px;
+  }
+  
+  /* Поиск на всю ширину */
+  .navbar-search-form {
+    width: 100%;
+    margin: 0 0 15px 0;
+  }
+  
+  /* Кнопка пользователя на всю ширину */
+  .user-section {
+    width: 100%;
+    margin: 0;
+  }
+  
+  .user-section .dropdown,
+  .user-section .btn {
+    width: 100%;
+  }
+  
+  .dropdown-toggle {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .dropdown-menu {
+    width: 100%;
+    position: static;
+    margin-top: 5px;
+    border: 1px solid #eee;
+    box-shadow: none;
+  }
+}
+
+/* ========== ДЛЯ ТЕЛЕФОНОВ (до 767px) ========== */
+@media (max-width: 767px) {
+  body {
+    padding-top: 60px;
+  }
+  
+  .navbar {
+    padding: 0.3rem 0;
+  }
+  
+  .navbar-brand {
+    font-size: 1rem;
+  }
+  
+  .navbar-brand i {
+    font-size: 0.9rem;
+  }
+  
+  .brand-text {
+    font-size: 0.9rem;
+  }
+  
+  .navbar-toggler {
+    padding: 0.2rem 0.4rem;
+  }
+  
+  .navbar-toggler-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 0.8rem;
+  }
+  
+  .nav-link {
+    padding: 10px 12px !important;
+    font-size: 0.9rem;
+  }
+  
+  .btn-beauty {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .dropdown-toggle {
+    font-size: 0.85rem;
+  }
+  
+  .dropdown-item {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+  }
+  
+  .navbar-search-input {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .navbar-search-btn {
+    padding: 0 12px;
+  }
+}
+
+/* ========== ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ТЕЛЕФОНОВ (до 400px) ========== */
+@media (max-width: 400px) {
+  .navbar-brand i {
+    display: none;
+  }
+  
+  .brand-text {
+    font-size: 0.85rem;
+  }
+  
+  .nav-link {
+    padding: 8px 10px !important;
+    font-size: 0.85rem;
+  }
+  
+  .btn-beauty {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Анимация открытия меню */
+.navbar-collapse {
+  transition: all 0.3s ease;
+}
+
+.navbar-collapse.show {
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Убираем лишние отступы */
+.navbar-collapse .container {
+  padding: 0;
+  max-width: 100%;
+}
+
+
+/* Стили для таблиц админ-панели - горизонтальная прокрутка */
+.admin-table {
+  margin-bottom: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+   position: relative;
+}
+
+.admin-table .table {
+  min-width: 800px;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.admin-table .table th,
+.admin-table .table td {
+  vertical-align: middle;
+  padding: 12px 8px;
+}
+
+/* Столбец с действиями - кнопки не переносятся */
+.admin-table .table td:last-child,
+.admin-table .table th:last-child {
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+/* Кнопки в столбце действий */
+.admin-table .btn-sm {
+  padding: 4px 8px;
+  margin: 0 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Статусы - компактные */
+.badge-active {
+  background-color: #28a745;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.badge-inactive {
+  background-color: #dc3545;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.badge-admin {
+  background-color: #d4a574;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 576px) {
+  .admin-table .table th,
+  .admin-table .table td {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+  }
+  
+  .admin-table .btn-sm {
+    padding: 3px 6px;
+  }
+  
+  .admin-table .btn-sm i {
+    font-size: 12px;
+  }
+  
+  .badge-active,
+  .badge-inactive,
+  .badge-admin {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+  }
+}
+
+
+.admin-table::after {
+  content: "← →";
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.admin-table:hover::after {
+  opacity: 1;
+}
+
+@media (min-width: 992px) {
+  .admin-table::after {
+    display: none;
   }
 }

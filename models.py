@@ -11,6 +11,11 @@ post_tags = db.Table('post_tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('blog_tags.id', ondelete='CASCADE'), primary_key=True)
 )
 
+user_favorites = db.Table('user_favorites',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('salon_id', db.Integer, db.ForeignKey('salons.id'))
+)
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     
@@ -27,6 +32,8 @@ class User(db.Model, UserMixin):
     # Дополнительные поля
     phone = db.Column(db.String(20))
     avatar_url = db.Column(db.String(300))
+
+    favorite_salons = db.relationship('Salon', secondary=user_favorites, backref='fans', lazy='dynamic')
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

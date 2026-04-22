@@ -21,161 +21,150 @@
     <link rel="stylesheet" href="../static/css/style.css" />
   </head>
   <body>
-    <nav
-      class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm"
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <i class="bi bi-scissors me-2"></i><span class="brand-text">Красота в Гродно</span>
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
     >
-      <div class="container">
-        <a class="navbar-brand" href="/">
-          <i class="bi bi-scissors me-2"></i>Красота в Гродно
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Главная</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/catalog">Каталог салонов</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/blog">Статьи</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/contact">Контакты</a>
-            </li>
-          </ul>
-          
-          <!-- Поле поиска с автодополнением -->
-          <div class="search-autocomplete navbar-search-form me-3">
-            <form action="/catalog/search" method="post" id="searchForm">
-              <div class="navbar-search-container">
-                <input
-                  type="text"
-                  class="navbar-search-input"
-                  id="searchInput"
-                  name="search_query"
-                  placeholder="Поиск салонов..."
-                  aria-label="Поиск салонов"
-                  autocomplete="off"
-                />
-                <button class="navbar-search-btn" type="submit">
-                  <i class="bi bi-search"></i>
-                </button>
-              </div>
-            </form>
-            <div class="search-autocomplete-results" id="autocompleteResults"></div>
-          </div>
-          
-          <div class="d-flex">
-    {% if current_user.is_authenticated %}
-        <!-- Если пользователь вошел -->
-        <div class="dropdown">
-            <button class="btn btn-beauty dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                <i class="bi bi-person me-1"></i> 
-                {% if current_user.first_name %}
-                    {{ current_user.first_name }}
-                {% else %}
-                    Аккаунт
-                {% endif %}
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Главная</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/catalog">Каталог</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/blog">Статьи</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/contact">Контакты</a>
+        </li>
+      </ul>
+      
+      <!-- Поле поиска -->
+      <div class="search-autocomplete navbar-search-form">
+        <form action="/catalog/search" method="post" id="searchForm">
+          <div class="navbar-search-container">
+            <input
+              type="text"
+              class="navbar-search-input"
+              id="searchInput"
+              name="search_query"
+              placeholder="Поиск..."
+              aria-label="Поиск салонов"
+              autocomplete="off"
+            />
+            <button class="navbar-search-btn" type="submit">
+              <i class="bi bi-search"></i>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                {% if current_user.is_admin%}
-              <li><a class="dropdown-item" href="/admin"><i class="bi bi-star me-2"></i>Админка</a></li>
-                <li><hr class="dropdown-divider"></li>
-                 {% endif %}
-                <li><a class="dropdown-item" href="/profile"><i class="bi bi-person-circle me-2"></i>Профиль</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Выйти</a></li>
-            </ul>
-        </div>
-    {% else %}
-        <!-- Если пользователь не вошел -->
-        <a class="btn btn-beauty me-2" href="/login">
-            <i class="bi bi-person me-1"></i> Войти
-        </a>
-    {% endif %}
-</div>
-        </div>
+          </div>
+        </form>
+        <div class="search-autocomplete-results" id="autocompleteResults"></div>
       </div>
-    </nav>
+      
+      <div class="user-section">
+        {% if current_user.is_authenticated %}
+        <div class="dropdown">
+          <button class="btn btn-beauty dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+            <i class="bi bi-person me-1"></i> 
+            {% if current_user.first_name %}
+              {{ current_user.first_name|truncate(10, True, '...') }}
+            {% else %}
+              Аккаунт
+            {% endif %}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            {% if current_user.is_admin %}
+            <li><a class="dropdown-item" href="/admin"><i class="bi bi-star me-2"></i>Админка</a></li>
+            <li><hr class="dropdown-divider"></li>
+            {% endif %}
+            <li><a class="dropdown-item" href="/profile"><i class="bi bi-person-circle me-2"></i>Профиль</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Выйти</a></li>
+          </ul>
+        </div>
+        {% else %}
+        <a class="btn btn-beauty" href="/login">
+          <i class="bi bi-person me-1"></i> Войти
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
     {% block content %}{% endblock %}
     <!-- Footer -->
     <footer class="footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4 mb-4">
-            <h4 class="mb-3"><i class="bi bi-scissors me-2"></i>Красота в Гродно</h4>
-            <p>
-              Крупнейший информационный ресурс о салонах красоты, парикмахерских
-              и СПА-центрах вашего города. Реальные отзывы, рейтинги и полная
-              информация.
-            </p>
-            <div class="d-flex mt-4">
-              <a href="#" class="me-3 social-icon">
-                <i class="bi bi-facebook fs-5"></i>
-              </a>
-              <a href="#" class="me-3 social-icon">
-                <i class="bi bi-instagram fs-5"></i>
-              </a>
-              <a href="#" class="social-icon">
-                <i class="bi bi-telegram fs-5"></i>
-              </a>
-            </div>
-          </div>
-          <div class="col-lg-2 col-md-6 mb-4">
-            <h5 class="mb-3">Ресурс</h5>
-            <ul class="list-unstyled">
-              <li class="mb-2"><a href="/contact">О проекте</a></li>
-              <li class="mb-2"><a href="/contact">Правила сайта</a></li>
-              <li class="mb-2">
-                <a href="/contact">Политика конфиденциальности</a>
-              </li>
-              <li class="mb-2"><a href="/contact">Для салонов</a></li>
-              <li class="mb-2"><a href="/contact">Реклама на сайте</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-2 col-md-6 mb-4">
-            <h5 class="mb-3">Помощь</h5>
-            <ul class="list-unstyled">
-              <li class="mb-2">
-                <a href="/contact">Как оставить отзыв</a>
-              </li>
-              <li class="mb-2"><a href="/contact">Вопросы и ответы</a></li>
-              <li class="mb-2"><a href="/contact">Контакты</a></li>
-              <li class="mb-2"><a href="/contact">Поддержка</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-4 mb-4">
-            <h5 class="mb-3">Контакты</h5>
-            <p><i class="bi bi-envelope me-2"></i> info@beauty-city.by</p>
-            <p><i class="bi bi-telephone me-2"></i> +375 (25) 123-45-67</p>
-            <p><i class="bi bi-clock me-2"></i> Пн-Пт: 9:00-18:00</p>
-            <p>
-              <i class="bi bi-geo-alt me-2"></i> г. Гродно, ул. Горького,
-              84
-            </p>
-          </div>
-        </div>
-        <hr class="mt-4 mb-4" />
-        <div class="row">
-          <div class="col-md-6">
-            <p class="mb-0">
-              © 2026 Красота в Гродно. Информационный ресурс. Все права защищены.
-            </p>
-          </div>
-          <div class="col-md-6 text-md-end">
-            <p class="mb-0">Информация предоставлена в ознакомительных целях</p>
-          </div>
-        </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h4 class="mb-3"><i class="bi bi-scissors me-2"></i>Красота в Гродно</h4>
+        <p>
+          Крупнейший информационный ресурс о салонах красоты, парикмахерских
+          и СПА-центрах вашего города. Реальные отзывы, рейтинги и полная
+          информация.
+        </p>
       </div>
-    </footer>
+
+      <!-- Колонка "Ресурс" -->
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h5 class="mb-3">Ресурс</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="/contact#about">О проекте</a></li>
+          <li class="mb-2"><a href="/contact#rules">Правила сайта</a></li>
+          <li class="mb-2">
+            <a href="/contact#privacy">Политика конфиденциальности</a>
+          </li>
+          <li class="mb-2"><a href="/contact#for-salons">Для салонов</a></li>
+          <li class="mb-2"><a href="/contact#ads">Реклама на сайте</a></li>
+        </ul>
+      </div>
+
+      <!-- Колонка "Помощь" -->
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h5 class="mb-3">Помощь</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2">
+            <a href="/contact#help">Как оставить отзыв</a>
+          </li>
+          <li class="mb-2"><a href="/contact#faq">Вопросы и ответы</a></li>
+          <li class="mb-2"><a href="/contact#support">Контакты</a></li>
+          <li class="mb-2"><a href="/contact#support">Поддержка</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 mb-4">
+        <h5 class="mb-3">Контакты</h5>
+        <p><i class="bi bi-envelope me-2"></i> info@beauty-city.by</p>
+        <p><i class="bi bi-telephone me-2"></i> +375(29) 861-56-93</p>
+        <p><i class="bi bi-clock me-2"></i> Пн-Пт: 9:00-18:00</p>
+        <p>
+          <i class="bi bi-geo-alt me-2"></i> г. Гродно, ул. Горького, 84
+        </p>
+      </div>
+    </div>
+    <hr class="mt-4 mb-4" />
+    <div class="row">
+      <div class="col-md-6">
+        <p class="mb-0">
+          © 2026 Красота в Гродно. Информационный ресурс. Все права защищены.
+        </p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <p class="mb-0">Информация предоставлена в ознакомительных целях</p>
+      </div>
+    </div>
+  </div>
+</footer>
 
     <script src="../static/js/bootstrap.bundle.min.js"></script>
     <script src="../static/js/search.js"></script>
