@@ -69,7 +69,7 @@
                                         <i class="bi bi-instagram text-danger"></i> Instagram
                                     </label>
                                     <input type="text" name="social_instagram" class="form-control" 
-                                           value="{{ salon.social_instagram if salon else '' }}" 
+                                           value="{{ salon.social_instagram if salon and salon.social_instagram else '' }}" 
                                            placeholder="https://instagram.com/...">
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -77,7 +77,7 @@
                                         <i class="bi bi-vk text-primary"></i> VK
                                     </label>
                                     <input type="text" name="social_vk" class="form-control" 
-                                           value="{{ salon.social_vk if salon else '' }}" 
+                                           value="{{ salon.social_vk if salon and salon.social_vk else '' }}" 
                                            placeholder="https://vk.com/...">
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -85,7 +85,7 @@
                                         <i class="bi bi-facebook text-primary"></i> Facebook
                                     </label>
                                     <input type="text" name="social_facebook" class="form-control" 
-                                           value="{{ salon.social_facebook if salon else '' }}" 
+                                           value="{{ salon.social_facebook if salon and salon.social_facebook else '' }}" 
                                            placeholder="https://facebook.com/...">
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -93,7 +93,7 @@
                                         <i class="bi bi-telegram text-info"></i> Telegram
                                     </label>
                                     <input type="text" name="social_telegram" class="form-control" 
-                                           value="{{ salon.social_telegram if salon else '' }}" 
+                                           value="{{ salon.social_telegram if salon and salon.social_telegram else '' }}" 
                                            placeholder="https://t.me/...">
                                 </div>
                             </div>

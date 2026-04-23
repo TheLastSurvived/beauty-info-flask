@@ -123,7 +123,6 @@ def home():
     
     # Средний рейтинг
     avg_rating = db.session.query(func.avg(Salon.rating)).scalar() or 0
-    print(avg_rating)
     average_rating = round(avg_rating, 1)
     
     # Топ салоны
