@@ -194,7 +194,12 @@ def add_salon():
             phone=request.form.get('phone'),
             working_hours=request.form.get('working_hours'),
             image_url=image_url,
-            is_verified='is_verified' in request.form
+            is_verified='is_verified' in request.form,
+            # Социальные сети
+            social_instagram=request.form.get('social_instagram'),
+            social_vk=request.form.get('social_vk'),
+            social_facebook=request.form.get('social_facebook'),
+            social_telegram=request.form.get('social_telegram')
         )
         
         db.session.add(salon)
@@ -206,7 +211,7 @@ def add_salon():
                   'Брови и ресницы', 'Тату и пирсинг', 'Мужской барбершоп', 'Солярий',
                   'Массажный салон', 'Эпиляция и депиляция', 'Свадебный салон',
                   'Детская парикмахерская', 'Салон красоты полного цикла']
-    districts = [ 'Ленинский', 'Октябрьский']
+    districts = ['Ленинский', 'Октябрьский']
     
     return render_template('admin/salon-form.html',
         title='Добавить салон',
@@ -214,6 +219,7 @@ def add_salon():
         categories=categories,
         districts=districts
     )
+
 
 @admin_bp.route('/salons/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -242,6 +248,11 @@ def edit_salon(id):
         salon.phone = request.form.get('phone')
         salon.working_hours = request.form.get('working_hours')
         salon.is_verified = 'is_verified' in request.form
+        # Социальные сети
+        salon.social_instagram = request.form.get('social_instagram')
+        salon.social_vk = request.form.get('social_vk')
+        salon.social_facebook = request.form.get('social_facebook')
+        salon.social_telegram = request.form.get('social_telegram')
         
         db.session.commit()
         flash('Салон успешно обновлен', 'success')
@@ -251,7 +262,7 @@ def edit_salon(id):
                   'Брови и ресницы', 'Тату и пирсинг', 'Мужской барбершоп', 'Солярий',
                   'Массажный салон', 'Эпиляция и депиляция', 'Свадебный салон',
                   'Детская парикмахерская', 'Салон красоты полного цикла']
-    districts = ['Центральный', 'Ленинский', 'Октябрьский']
+    districts = ['Ленинский', 'Октябрьский']
     
     return render_template('admin/salon-form.html',
         title='Редактировать салон',

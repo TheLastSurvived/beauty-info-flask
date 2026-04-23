@@ -57,6 +57,10 @@ class Salon(db.Model):
     is_verified = db.Column(db.Boolean, default=False)
     image_url = db.Column(db.String(300), default='/static/img/default.png')
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    social_instagram = db.Column(db.String(300))
+    social_vk = db.Column(db.String(300))
+    social_facebook = db.Column(db.String(300))
+    social_telegram = db.Column(db.String(300))
     
     # Связи
     services = db.relationship('Service', backref='salon', lazy=True, cascade='all, delete-orphan')
