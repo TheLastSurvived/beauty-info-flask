@@ -29,7 +29,7 @@
                     <th style="width: 100px;">Район</th>
                     <th style="width: 80px;">Рейтинг</th>
                     <th style="width: 80px;">Отзывов</th>
-                    <th style="width: 100px;">Проверен</th>
+                    
                     <th style="width: 100px;">Действия</th>
                 </tr>
             </thead>
@@ -42,7 +42,6 @@
                     <td>{{ salon.district }}</td>
                     <td>{% if salon.rating > 0 %}{{ "%.1f"|format(salon.rating) }}{% else %}—{% endif %}</td>
                     <td>{{ salon.reviews_count }}</td>
-                    <td>{% if salon.is_verified %}<span class="badge-active">Да</span>{% else %}<span class="badge-inactive">Нет</span>{% endif %}</td>
                     <td class="text-nowrap">
                         <a href="{{ url_for('admin.edit_salon', id=salon.id) }}" class="btn btn-sm btn-outline-beauty">
                             <i class="bi bi-pencil"></i>
