@@ -573,7 +573,7 @@ def delete_image_route():
     data = request.get_json()
     image_url = data.get('image_url')
     
-    if image_url and delete_image(image_url):
+    if image_url and delete_uploaded_image(image_url):
         return jsonify({'success': True})
     return jsonify({'success': False, 'error': 'Не удалось удалить изображение'}), 400
 
