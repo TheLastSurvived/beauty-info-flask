@@ -17,6 +17,16 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Вспомогательная функция для возврата на предыдущую страницу
+def redirect_back(default_endpoint='admin.index', **kwargs):
+    """Возвращает на предыдущую страницу или на дефолтную"""
+    referrer = request.referrer
+    
+    if referrer:
+        return redirect(referrer)
+    else:
+        return redirect(url_for(default_endpoint, **kwargs))
+
 # Главная страница админки
 @admin_bp.route('/')
 @login_required
@@ -279,7 +289,7 @@ def delete_salon(id):
     db.session.delete(salon)
     db.session.commit()
     flash('Салон успешно удален', 'success')
-    return redirect(url_for('admin.salons'))
+    return redirect_back('admin.salons')
 
 # ==================== УПРАВЛЕНИЕ УСЛУГАМИ ====================
 
@@ -324,7 +334,7 @@ def add_service():
     
     salons = Salon.query.order_by(Salon.name).all()
     categories = ['Парикмахерские услуги', 'Маникюр', 'Педикюр', 'Косметология', 
-                  'Массаж', 'SPA-процедуры', 'Эпиляция', 'Визаж', 'Брови и ресницы']
+                  'Массаж', 'SPA-процедуры', 'Эпиляция', 'Визаж', 'Брови и ресницы', 'Татуировки', 'Пирсинг']
     
     return render_template('admin/service-form.html',
         title='Добавить услугу',
@@ -352,7 +362,7 @@ def edit_service(id):
     
     salons = Salon.query.order_by(Salon.name).all()
     categories = ['Парикмахерские услуги', 'Маникюр', 'Педикюр', 'Косметология', 
-                  'Массаж', 'SPA-процедуры', 'Эпиляция', 'Визаж', 'Брови и ресницы']
+                  'Массаж', 'SPA-процедуры', 'Эпиляция', 'Визаж', 'Брови и ресницы', 'Татуировки', 'Пирсинг']
     
     return render_template('admin/service-form.html',
         title='Редактировать услугу',
@@ -369,7 +379,7 @@ def delete_service(id):
     db.session.delete(service)
     db.session.commit()
     flash('Услуга успешно удалена', 'success')
-    return redirect(url_for('admin.services'))
+    return redirect_back('admin.services')
 
 # ==================== УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ ====================
 
@@ -412,7 +422,7 @@ def toggle_admin(id):
         db.session.commit()
         flash(f'Права администратора {"предоставлены" if user.is_admin else "отозваны"} для {user.email}', 'success')
     
-    return redirect(url_for('admin.users'))
+    return redirect_back('admin.users')
 
 @admin_bp.route('/users/<int:id>/delete', methods=['POST'])
 @login_required
@@ -426,7 +436,7 @@ def delete_user(id):
         db.session.commit()
         flash(f'Пользователь {user.email} успешно удален', 'success')
     
-    return redirect(url_for('admin.users'))
+    return redirect_back('admin.users')
 
 # ==================== УПРАВЛЕНИЕ ОТЗЫВАМИ ====================
 
@@ -467,7 +477,7 @@ def delete_review(id):
     
     db.session.commit()
     flash('Отзыв успешно удален', 'success')
-    return redirect(url_for('admin.reviews'))
+    return redirect_back('admin.reviews')
 
 # ==================== УПРАВЛЕНИЕ БЛОГОМ ====================
 
@@ -649,7 +659,7 @@ def delete_blog_post(id):
     db.session.delete(post)
     db.session.commit()
     flash('Статья успешно удалена', 'success')
-    return redirect(url_for('admin.blog_posts'))
+    return redirect_back('admin.blog_posts')
 
 @admin_bp.route('/blog/comments')
 @login_required
@@ -674,7 +684,7 @@ def approve_comment(id):
     comment.is_approved = True
     db.session.commit()
     flash('Комментарий опубликован', 'success')
-    return redirect(url_for('admin.blog_comments'))
+    return redirect_back('admin.blog_comments')
 
 @admin_bp.route('/blog/comments/<int:id>/delete', methods=['POST'])
 @login_required
@@ -684,7 +694,7 @@ def delete_blog_comment(id):
     db.session.delete(comment)
     db.session.commit()
     flash('Комментарий удален', 'success')
-    return redirect(url_for('admin.blog_comments'))
+    return redirect_back('admin.blog_comments')
 
 @admin_bp.route('/blog/tags')
 @login_required
@@ -712,4 +722,4 @@ def delete_blog_tag(id):
     db.session.delete(tag)
     db.session.commit()
     flash('Тег успешно удален', 'success')
-    return redirect(url_for('admin.blog_tags'))
+    return redirect_back('admin.blog_tags')

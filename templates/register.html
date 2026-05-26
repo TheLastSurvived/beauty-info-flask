@@ -25,9 +25,9 @@
 
     <!-- Форма регистрации -->
     <form id="registerForm" method="post" novalidate>
-      <!-- Имя и Фамилия -->
-      <div class="row mb-3">
-        <div class="col-md-6 mb-2">
+      <!-- Имя и Фамилия (рядом) -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
           <div class="form-floating">
             <input
               type="text"
@@ -73,7 +73,7 @@
       </div>
 
       <!-- Пароль -->
-      <div class="form-floating mb-2">
+      <div class="form-floating mb-3">
         <input
           type="password"
           class="form-control"
@@ -172,6 +172,10 @@
   .invalid-feedback {
     display: block;
     font-size: 0.8rem;
+  }
+  /* Убираем нижний отступ у последнего mb-3, чтобы расстояние до кнопки было одинаковым */
+  .form-floating.mb-3:last-of-type {
+    margin-bottom: 1rem !important;
   }
 </style>
 {% endblock %}

@@ -73,50 +73,47 @@
 
   <div class="row g-4">
     {% for salon in top_salons %}
-    <div class="col-md-4">
-      <div class="top-salon-card top-{{ loop.index }}">
+    <div class="col-md-4 d-flex">
+      <div class="top-salon-card top-{{ loop.index }} w-100 d-flex flex-column">
         <div class="top-badge">#{{ loop.index }}</div>
-        <div class="row g-0">
+        <div class="row g-0 flex-grow-1">
           <div class="col-md-5">
             <img src="{{ salon.image_url }}" class="top-salon-img" alt="{{ salon.name }}" />
           </div>
-          <div class="col-md-7">
-            <div class="p-3">
-              <h5 class="mb-1">{{ salon.name }}</h5>
-              <p class="text-muted small mb-2">{{ salon.category }}</p>
-              <div class="d-flex align-items-center mb-2">
-                <div class="rating rating-wrap me-2">
-                  {% for i in range(5) %}
-                    {% if i < salon.rating|int %}
-                      <i class="bi bi-star-fill"></i>
-                    {% elif i < salon.rating %}
-                      <i class="bi bi-star-half"></i>
-                    {% else %}
-                      <i class="bi bi-star"></i>
-                    {% endif %}
-                  {% endfor %}
+          <div class="col-md-7 d-flex flex-column">
+            <div class="p-3 d-flex flex-column h-100">
+              <div>
+                <h5 class="mb-1">{{ salon.name }}</h5>
+                <p class="text-muted small mb-2">{{ salon.category }}</p>
+                <div class="d-flex align-items-center mb-2">
+                  <div class="rating rating-wrap me-2">
+                    {% for i in range(5) %}
+                      {% if i < salon.rating|int %}
+                        <i class="bi bi-star-fill"></i>
+                      {% elif i < salon.rating %}
+                        <i class="bi bi-star-half"></i>
+                      {% else %}
+                        <i class="bi bi-star"></i>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  <span class="text-muted small">{{ "%.1f"|format(salon.rating) }} ({{ salon.reviews_count }} отзывов)</span>
                 </div>
-                <span class="text-muted small">{{ "%.1f"|format(salon.rating) }} ({{ salon.reviews_count }} отзывов)</span>
+                <div class="salon-info">
+                  <p class="small mb-1">
+                    <i class="bi bi-geo-alt me-1"></i>{{ salon.address }}
+                  </p>
+                  <p class="small mb-2">
+                    <i class="bi bi-clock me-1"></i>{{ salon.working_hours }}
+                  </p>
+                  <p class="small mb-0">
+                    <i class="bi bi-telephone me-1"></i>{{ salon.phone }}
+                  </p>
+                </div>
               </div>
-              <div class="salon-info">
-                <p class="small mb-1">
-                  <i class="bi bi-geo-alt me-1"></i>{{ salon.address }}
-                </p>
-                <p class="small mb-2">
-                  <i class="bi bi-clock me-1"></i>{{ salon.working_hours }}
-                </p>
-                <p class="small mb-0">
-                  <i class="bi bi-telephone me-1"></i>{{ salon.phone }}
-                </p>
-                <!-- 
-                {% if salon.is_verified %}
-                <p class="small text-success mb-0 mt-1">
-                  <i class="bi bi-check-circle-fill"></i> Проверенный салон
-                </p>
-                {% endif %}
-                -->
+              <div class="mt-auto pt-3">
+                <a href="/catalog/{{ salon.id }}" class="btn btn-sm btn-beauty w-100">Подробнее</a>
               </div>
-              <a href="/catalog/{{ salon.id }}" class="btn btn-sm btn-beauty mt-2 w-100">Подробнее</a>
             </div>
           </div>
         </div>
