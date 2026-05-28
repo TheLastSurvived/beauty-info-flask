@@ -172,14 +172,15 @@
              data-bs-parent="#servicesAccordion">
           <div class="accordion-body">
             {% for service in services_list %}
-            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-              <div>
+            <!-- Используем service-item класс вместо d-flex -->
+            <div class="service-item border-bottom pb-2 mb-2">
+              <div class="service-info">
                 <h6 class="mb-1">{{ service.name }}</h6>
                 {% if service.description %}
-                <small class="text-muted">{{ service.description }}</small>
+                <small class="text-muted service-description">{{ service.description }}</small>
                 {% endif %}
               </div>
-              <div>
+              <div class="service-price-wrapper">
                 <strong class="service-price">
                   {% if service.price %}
                     {{ service.price }} BYN
@@ -197,22 +198,22 @@
     </div>
     {% else %}
     <!-- Вариант 2: Простой список (если передается только services) -->
-    <div class="list-group">
+    <div class="services-list">
       {% for service in services %}
-      <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-        <div>
+      <div class="service-item border-bottom pb-2 mb-2">
+        <div class="service-info">
           <h6 class="mb-1">{{ service.name }}</h6>
           {% if service.category %}
           <span class="badge bg-light text-dark mb-1">{{ service.category }}</span>
           {% endif %}
           {% if service.description %}
-          <small class="text-muted d-block">{{ service.description }}</small>
+          <small class="text-muted service-description d-block">{{ service.description }}</small>
           {% endif %}
         </div>
-        <div>
+        <div class="service-price-wrapper">
           <strong class="service-price">
             {% if service.price %}
-              {{ service.price }} ₽
+              {{ service.price }} BYN
             {% else %}
               По запросу
             {% endif %}

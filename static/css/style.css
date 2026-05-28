@@ -2607,3 +2607,97 @@ html {
     display: none;
   }
 }
+
+
+
+.service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.service-info {
+    flex: 1;
+    min-width: 0; /* Важно для переноса длинных слов */
+}
+
+.service-info h6 {
+    margin-bottom: 4px;
+    word-wrap: break-word;
+}
+
+.service-description {
+    display: block;
+    word-wrap: break-word;
+}
+
+.service-price-wrapper {
+    flex-shrink: 0; /* Цена не сжимается */
+}
+
+.service-price {
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Адаптив для планшетов */
+@media (max-width: 768px) {
+    .service-price {
+        font-size: 0.95rem;
+    }
+    
+    .service-info h6 {
+        font-size: 0.95rem;
+    }
+}
+
+/* Адаптив для мобильных телефонов */
+@media (max-width: 576px) {
+    .service-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .service-price-wrapper {
+        width: 100%;
+    }
+    
+    .service-price {
+        display: inline-block;
+        white-space: normal;
+        background: #f8f9fa;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .service-info h6 {
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+    }
+    
+    .service-description {
+        font-size: 0.8rem;
+    }
+}
+
+/* Для очень маленьких экранов (до 400px) */
+@media (max-width: 400px) {
+    .service-price {
+        font-size: 0.85rem;
+        padding: 4px 10px;
+    }
+    
+    .service-info h6 {
+        font-size: 0.85rem;
+    }
+}
+
+/* Альтернативный вариант для аккордеона */
+.accordion-body .service-item:last-child {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+}
