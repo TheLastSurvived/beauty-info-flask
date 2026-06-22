@@ -5,11 +5,15 @@ from flask import current_app
 import uuid
 import re
 
+
+# Проверка разрешенного расширения файла
 def allowed_file(filename):
     """Проверка разрешенного расширения файла"""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
+
+# Генерация уникального имени файла на основе оригинального
 def get_unique_filename(original_filename):
     """Генерация уникального имени файла"""
     ext = original_filename.rsplit('.', 1)[1].lower() if '.' in original_filename else 'jpg'
@@ -19,11 +23,13 @@ def get_unique_filename(original_filename):
     name = name[:50]  # Ограничиваем длину
     return f"{name}_{unique_id}.{ext}"
 
+
+# Создание миниатюры (уменьшенной копии) изображения
 def create_thumbnail_image(image_path, thumbnail_path, size):
     """Создание миниатюры изображения"""
     try:
         with Image.open(image_path) as img:
-            # Конвертируем в RGB если необходимо
+            # Конвертируем в RGB если необходимо (для JPEG)
             if img.mode in ('RGBA', 'P'):
                 img = img.convert('RGB')
             
@@ -35,6 +41,8 @@ def create_thumbnail_image(image_path, thumbnail_path, size):
         current_app.logger.error(f"Ошибка создания миниатюры: {e}")
         return False
 
+
+# Оптимизация изображения - сжатие и изменение размера
 def optimize_uploaded_image(image_path, max_size=(1200, 1200), quality=85):
     """Оптимизация изображения"""
     try:
@@ -56,6 +64,8 @@ def optimize_uploaded_image(image_path, max_size=(1200, 1200), quality=85):
         current_app.logger.error(f"Ошибка оптимизации изображения: {e}")
         return False
 
+
+# Основная функция сохранения загруженного изображения
 def save_uploaded_image(file, subfolder='salons', make_thumb=True, thumb_size=(300, 200)):
     """
     Сохранение загруженного файла
@@ -100,6 +110,8 @@ def save_uploaded_image(file, subfolder='salons', make_thumb=True, thumb_size=(3
     
     return file_url, thumbnail_path
 
+
+# Удаление изображения и его миниатюры по URL
 def delete_uploaded_image(image_url):
     """Удаление изображения и его миниатюры"""
     if not image_url or not image_url.startswith('/static/uploads/'):

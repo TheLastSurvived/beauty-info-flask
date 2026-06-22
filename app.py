@@ -946,7 +946,7 @@ def update_profile():
     return redirect(url_for('profile'))
 
 
-
+#добавить в избранное
 @app.route('/favorites/add', methods=['POST'])
 @login_required
 def add_to_favorites():
@@ -988,16 +988,14 @@ def remove_from_favorites():
     
     return jsonify({'success': False, 'message': 'Салон не найден в избранном'})
 
-
+#страница ошибки 413
 @app.errorhandler(413)
 def too_large(e):
     flash('Файл слишком большой. Максимальный размер 16MB', 'error')
     return redirect(request.referrer or url_for('home'))
 
-
+#запуск приложения
 if __name__ == '__main__':
-    
     with app.app_context():
         db.create_all()
-    
     app.run(debug=True, host='127.0.0.1', port=8000)

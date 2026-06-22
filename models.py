@@ -16,6 +16,7 @@ user_favorites = db.Table('user_favorites',
     db.Column('salon_id', db.Integer, db.ForeignKey('salons.id'))
 )
 
+# таблица пользователей
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     
@@ -40,7 +41,8 @@ class User(db.Model, UserMixin):
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
+    
+# таблица салонов
 class Salon(db.Model):
     __tablename__ = 'salons'
     
@@ -66,6 +68,7 @@ class Salon(db.Model):
     services = db.relationship('Service', backref='salon', lazy=True, cascade='all, delete-orphan')
     reviews = db.relationship('Review', backref='salon', lazy=True, cascade='all, delete-orphan')
 
+# таблица услуг
 class Service(db.Model):
     __tablename__ = 'services'
     
@@ -76,6 +79,8 @@ class Service(db.Model):
     description = db.Column(db.Text)
     price = db.Column(db.Integer)
 
+
+# таблица отзывов
 class Review(db.Model):
     __tablename__ = 'reviews'
     
@@ -90,6 +95,8 @@ class Review(db.Model):
 
     user = db.relationship('User', backref='reviews', lazy=True)  # Добавлено
 
+
+# таблица постов в блоге
 class BlogPost(db.Model):
     __tablename__ = 'blog_posts'
     
@@ -110,6 +117,7 @@ class BlogPost(db.Model):
     comments = db.relationship('BlogComment', backref='post', lazy=True, cascade='all, delete-orphan')
     tags = db.relationship('BlogTag', secondary=post_tags, backref=db.backref('posts', lazy=True))
 
+# таблица тегов в блоге
 class BlogTag(db.Model):
     __tablename__ = 'blog_tags'
     
@@ -117,6 +125,7 @@ class BlogTag(db.Model):
     name = db.Column(db.String(30), unique=True, nullable=False)
     slug = db.Column(db.String(30), unique=True)
 
+# таблица комментариев в блоге
 class BlogComment(db.Model):
     __tablename__ = 'blog_comments'
     

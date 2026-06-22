@@ -27,7 +27,9 @@ def redirect_back(default_endpoint='admin.index', **kwargs):
     else:
         return redirect(url_for(default_endpoint, **kwargs))
 
-# Главная страница админки
+# ==================== ГЛАВНАЯ ПАНЕЛЬ УПРАВЛЕНИЯ ====================
+
+# Главная страница админки - дашборд со статистикой и последними записями
 @admin_bp.route('/')
 @login_required
 @admin_required
@@ -68,8 +70,10 @@ def index():
         avg_salon_rating=round(avg_salon_rating, 1)
     )
 
+
 # ==================== ЗАГРУЗКА ИЗОБРАЖЕНИЙ ====================
 
+# AJAX загрузка изображения для салона
 @admin_bp.route('/upload/salon-image', methods=['POST'])
 @login_required
 @admin_required
@@ -129,7 +133,7 @@ def upload_blog_image():
     else:
         return jsonify({'error': 'Неподдерживаемый формат файла'}), 400
 
-# Загрузка изображения для редактора
+# Загрузка изображения для текстового редактора (TinyMCE/Summernote)
 @admin_bp.route('/upload/editor-image', methods=['POST'])
 @login_required
 @admin_required
@@ -157,9 +161,9 @@ def upload_editor_image():
         return jsonify({'error': 'Неподдерживаемый формат файла'}), 400
 
 
-
 # ==================== УПРАВЛЕНИЕ САЛОНАМИ ====================
 
+# Список салонов с пагинацией и поиском
 @admin_bp.route('/salons')
 @login_required
 @admin_required
@@ -181,6 +185,7 @@ def salons():
         search=search
     )
 
+# Добавление нового салона
 @admin_bp.route('/salons/add', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -230,7 +235,7 @@ def add_salon():
         districts=districts
     )
 
-
+# Редактирование существующего салона
 @admin_bp.route('/salons/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -281,6 +286,7 @@ def edit_salon(id):
         districts=districts
     )
 
+# Удаление салона
 @admin_bp.route('/salons/<int:id>/delete', methods=['POST'])
 @login_required
 @admin_required
@@ -291,8 +297,10 @@ def delete_salon(id):
     flash('Салон успешно удален', 'success')
     return redirect_back('admin.salons')
 
+
 # ==================== УПРАВЛЕНИЕ УСЛУГАМИ ====================
 
+# Список услуг с фильтрацией по салону
 @admin_bp.route('/services')
 @login_required
 @admin_required
@@ -314,6 +322,7 @@ def services():
         salon_id=salon_id
     )
 
+# Добавление новой услуги
 @admin_bp.route('/services/add', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -343,6 +352,7 @@ def add_service():
         categories=categories
     )
 
+# Редактирование существующей услуги
 @admin_bp.route('/services/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -371,6 +381,7 @@ def edit_service(id):
         categories=categories
     )
 
+# Удаление услуги
 @admin_bp.route('/services/<int:id>/delete', methods=['POST'])
 @login_required
 @admin_required
@@ -381,8 +392,10 @@ def delete_service(id):
     flash('Услуга успешно удалена', 'success')
     return redirect_back('admin.services')
 
+
 # ==================== УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ ====================
 
+# Список пользователей с пагинацией и поиском
 @admin_bp.route('/users')
 @login_required
 @admin_required
@@ -410,6 +423,7 @@ def users():
         search=search
     )
 
+# Переключение прав администратора у пользователя
 @admin_bp.route('/users/<int:id>/toggle-admin', methods=['POST'])
 @login_required
 @admin_required
@@ -424,6 +438,7 @@ def toggle_admin(id):
     
     return redirect_back('admin.users')
 
+# Удаление пользователя
 @admin_bp.route('/users/<int:id>/delete', methods=['POST'])
 @login_required
 @admin_required
@@ -438,8 +453,10 @@ def delete_user(id):
     
     return redirect_back('admin.users')
 
+
 # ==================== УПРАВЛЕНИЕ ОТЗЫВАМИ ====================
 
+# Список всех отзывов
 @admin_bp.route('/reviews')
 @login_required
 @admin_required
@@ -455,6 +472,7 @@ def reviews():
         pagination=pagination
     )
 
+# Удаление отзыва с пересчетом рейтинга салона
 @admin_bp.route('/reviews/<int:id>/delete', methods=['POST'])
 @login_required
 @admin_required
@@ -479,8 +497,10 @@ def delete_review(id):
     flash('Отзыв успешно удален', 'success')
     return redirect_back('admin.reviews')
 
+
 # ==================== УПРАВЛЕНИЕ БЛОГОМ ====================
 
+# Список всех статей блога
 @admin_bp.route('/blog/posts')
 @login_required
 @admin_required
@@ -507,6 +527,7 @@ def blog_posts():
         search=search
     )
 
+# Добавление новой статьи
 @admin_bp.route('/blog/posts/add', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -574,7 +595,7 @@ def add_blog_post():
         categories=categories
     )
 
-
+# Удаление изображения (AJAX)
 @admin_bp.route('/delete-image', methods=['POST'])
 @login_required
 @admin_required
@@ -587,7 +608,7 @@ def delete_image_route():
         return jsonify({'success': True})
     return jsonify({'success': False, 'error': 'Не удалось удалить изображение'}), 400
 
-
+# Редактирование существующей статьи
 @admin_bp.route('/blog/posts/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -608,7 +629,6 @@ def edit_blog_post(id):
                 uploaded_url, _ = save_uploaded_image(file, subfolder='blog', make_thumb=True)
                 if uploaded_url:
                     post.image_url = uploaded_url
-
 
         elif request.form.get('image_url'):
             post.image_url = request.form.get('image_url')
@@ -651,6 +671,7 @@ def edit_blog_post(id):
         current_tags=current_tags
     )
 
+# Удаление статьи блога
 @admin_bp.route('/blog/posts/<int:id>/delete', methods=['POST'])
 @login_required
 @admin_required
@@ -661,6 +682,7 @@ def delete_blog_post(id):
     flash('Статья успешно удалена', 'success')
     return redirect_back('admin.blog_posts')
 
+# Список всех комментариев к статьям
 @admin_bp.route('/blog/comments')
 @login_required
 @admin_required
@@ -676,6 +698,7 @@ def blog_comments():
         pagination=pagination
     )
 
+# Одобрение комментария (публикация)
 @admin_bp.route('/blog/comments/<int:id>/approve', methods=['POST'])
 @login_required
 @admin_required
@@ -686,6 +709,7 @@ def approve_comment(id):
     flash('Комментарий опубликован', 'success')
     return redirect_back('admin.blog_comments')
 
+# Удаление комментария
 @admin_bp.route('/blog/comments/<int:id>/delete', methods=['POST'])
 @login_required
 @admin_required
@@ -696,6 +720,7 @@ def delete_blog_comment(id):
     flash('Комментарий удален', 'success')
     return redirect_back('admin.blog_comments')
 
+# Список всех тегов блога с количеством статей
 @admin_bp.route('/blog/tags')
 @login_required
 @admin_required
@@ -714,6 +739,7 @@ def blog_tags():
         tags=tags
     )
 
+# Удаление тега
 @admin_bp.route('/blog/tags/<int:id>/delete', methods=['POST'])
 @login_required
 @admin_required
